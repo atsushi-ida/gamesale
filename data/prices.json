@@ -103,6 +103,57 @@
           "fetched_at": "2026-04-28"
         }
       }
+    },
+    "lies_of_p": {
+      "id": "lies_of_p",
+      "title": "Lies of P",
+      "maker": "NEOWIZ",
+      "steam_id": "1627720",
+      "prices": {
+        "steam": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 8360,
+          "sale_price": 4180,
+          "discount_pct": 50,
+          "currency": "JPY",
+          "fetched_at": "2026-04-28"
+        }
+      }
+    },
+    "sekiro": {
+      "id": "sekiro",
+      "title": "SEKIRO: SHADOWS DIE TWICE",
+      "maker": "フロムソフトウェア",
+      "steam_id": "814380",
+      "prices": {
+        "steam": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 8360,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-28"
+        }
+      }
+    },
+    "elden_ring": {
+      "id": "elden_ring",
+      "title": "ELDEN RING",
+      "maker": "フロムソフトウェア",
+      "steam_id": "1245620",
+      "prices": {
+        "steam": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 9020,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-28"
+        }
+      }
     }
   },
   "eshop_sale_count": 0

@@ -26,5 +26,19 @@
         "discount_pct": 85
       }
     ]
+  },
+  "lies_of_p_steam": {
+    "game_id": "lies_of_p",
+    "platform": "steam",
+    "all_time_low": 4180,
+    "all_time_low_date": "2026-04-28",
+    "records": [
+      {
+        "date": "2026-04-28",
+        "sale_price": 4180,
+        "regular_price": 8360,
+        "discount_pct": 50
+      }
+    ]
   }
 }

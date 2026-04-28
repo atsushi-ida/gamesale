@@ -18,9 +18,13 @@
   --card-radius:12px;
 }
 [data-theme="light"]{
-  --bg:#f0f4ff;--surface:#fff;--surface2:#eef2ff;--surface3:#e3e8f8;
-  --border:#d0d9f0;--border2:#b8c5e8;--text:#1a2340;--text2:#4a5a80;--text3:#8a9ab8;
+  --bg:#f4f6fb;--surface:#ffffff;--surface2:#eef1f9;--surface3:#e4e8f5;
+  --border:#d4daea;--border2:#b8c2dc;
+  --text:#1a2340;--text2:#4a5a80;--text3:#8898bb;
 }
+[data-theme="light"] .gcard:hover{box-shadow:0 4px 20px rgba(0,0,0,.12)}
+[data-theme="light"] .ptable td{border-bottom-color:rgba(0,0,0,.06)}
+[data-theme="light"] .hot-row,[data-theme="light"] .rec-row,[data-theme="light"] .dead-row,[data-theme="light"] .wl-item{border-bottom-color:rgba(0,0,0,.07)}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;overflow-x:hidden;transition:background .3s,color .3s}
 body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(41,182,246,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(41,182,246,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
@@ -378,7 +382,7 @@ footer{border-top:1px solid var(--border);padding:20px;text-align:center;font-si
 
 <script>
 // ===== テーマ =====
-const savedTheme = localStorage.getItem('theme') || 'dark';
+const savedTheme = localStorage.getItem('theme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
 function toggleTheme() {
   const cur = document.documentElement.getAttribute('data-theme');
@@ -387,7 +391,7 @@ function toggleTheme() {
   localStorage.setItem('theme', next);
   document.querySelector('.theme-btn').textContent = next === 'dark' ? '🌙' : '☀️';
 }
-if (savedTheme === 'light') document.querySelector('.theme-btn').textContent = '☀️';
+document.querySelector('.theme-btn').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
 
 // ===== 状態管理 =====
 let priceData = null;
@@ -562,13 +566,15 @@ function createCard(gameId, game, index) {
     }
   }
 
-  // 購入ボタン
+  // 購入ボタン（商品ページに直接リンク）
   let buyHtml = '';
-  if (prices.eshop) {
+  if (prices.eshop && game.nsuid) {
+    buyHtml += `<a class="buy-btn buy-eshop" href="https://store-jp.nintendo.com/item/software/D${game.nsuid}" target="_blank" rel="noopener">🎮 eショップで買う</a>`;
+  } else if (prices.eshop) {
     buyHtml += `<a class="buy-btn buy-eshop" href="https://store-jp.nintendo.com/" target="_blank" rel="noopener">🎮 eショップで買う</a>`;
   }
   if (prices.steam && game.steam_id) {
-    buyHtml += `<a class="buy-btn buy-steam" href="https://store.steampowered.com/app/${game.steam_id}/" target="_blank" rel="noopener">🖥️ Steamで買う</a>`;
+    buyHtml += `<a class="buy-btn buy-steam" href="https://store.steampowered.com/app/${game.steam_id}/?cc=jp" target="_blank" rel="noopener">🖥️ Steamで買う</a>`;
   }
 
   const card = document.createElement('div');

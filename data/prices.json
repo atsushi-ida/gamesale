@@ -1,0 +1,147 @@
+{
+  "last_updated": "2026-04-28",
+  "eshop_all_sales": {
+    "count": 1247,
+    "updated": "2026-04-28"
+  },
+  "games": {
+    "biohazard_re4": {
+      "title": "バイオハザード RE:4 ゴールドエディション",
+      "maker": "カプコン",
+      "prices": {
+        "eshop": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 8789,
+          "sale_price": 2637,
+          "discount_pct": 70,
+          "sale_end": "2026-05-06",
+          "currency": "JPY",
+          "fetched_at": "2026-04-28",
+          "all_time_low": 2637,
+          "all_time_low_date": "2026-04-28"
+        },
+        "steam": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 8800,
+          "sale_price": 3520,
+          "discount_pct": 60,
+          "sale_end": "2026-05-02",
+          "currency": "JPY",
+          "fetched_at": "2026-04-28",
+          "all_time_low": 3520,
+          "all_time_low_date": "2026-04-28"
+        }
+      }
+    },
+    "persona5_royal": {
+      "title": "ペルソナ5 ザ・ロイヤル",
+      "maker": "アトラス",
+      "prices": {
+        "eshop": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 9878,
+          "sale_price": 2469,
+          "discount_pct": 75,
+          "sale_end": "2026-05-08",
+          "currency": "JPY",
+          "fetched_at": "2026-04-28",
+          "all_time_low": 2469,
+          "all_time_low_date": "2026-04-28"
+        },
+        "steam": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 9878,
+          "sale_price": 2469,
+          "discount_pct": 75,
+          "sale_end": "2026-05-08",
+          "currency": "JPY",
+          "fetched_at": "2026-04-28",
+          "all_time_low": 2469,
+          "all_time_low_date": "2026-04-28"
+        }
+      }
+    },
+    "mhrise_sunbreak": {
+      "title": "モンスターハンターライズ：サンブレイク",
+      "maker": "カプコン",
+      "prices": {
+        "eshop": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 5990,
+          "sale_price": 1797,
+          "discount_pct": 70,
+          "sale_end": "2026-05-02",
+          "currency": "JPY",
+          "fetched_at": "2026-04-28",
+          "all_time_low": 1797,
+          "all_time_low_date": "2026-04-28"
+        },
+        "steam": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 5990,
+          "sale_price": 1500,
+          "discount_pct": 75,
+          "sale_end": "2026-05-02",
+          "currency": "JPY",
+          "fetched_at": "2026-04-28",
+          "all_time_low": 1500,
+          "all_time_low_date": "2026-04-28"
+        }
+      }
+    },
+    "dq11s": {
+      "title": "ドラゴンクエストXI S 過ぎ去りし時を求めて S",
+      "maker": "スクウェア・エニックス",
+      "prices": {
+        "eshop": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 5478,
+          "sale_price": 1320,
+          "discount_pct": 76,
+          "sale_end": "2026-05-06",
+          "currency": "JPY",
+          "fetched_at": "2026-04-28",
+          "all_time_low": 1320,
+          "all_time_low_date": "2026-04-28"
+        },
+        "steam": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 5478,
+          "sale_price": 1320,
+          "discount_pct": 76,
+          "sale_end": "2026-05-06",
+          "currency": "JPY",
+          "fetched_at": "2026-04-28",
+          "all_time_low": 1320,
+          "all_time_low_date": "2026-04-28"
+        }
+      }
+    },
+    "xenoblade3": {
+      "title": "ゼノブレイド3",
+      "maker": "任天堂",
+      "prices": {
+        "eshop": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 8778,
+          "sale_price": 4389,
+          "discount_pct": 50,
+          "sale_end": "2026-05-06",
+          "currency": "JPY",
+          "fetched_at": "2026-04-28",
+          "all_time_low": 4389,
+          "all_time_low_date": "2026-04-28"
+        }
+      }
+    }
+  }
+}

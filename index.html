@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ゲーセル — 全プラットフォームまとめて比較</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#07090f;--surface:#0e1220;--surface2:#151b2e;--surface3:#1c2540;
+  --border:#222d44;--border2:#2d3d5e;
+  --text:#e2e8f8;--text2:#7a8fb0;--text3:#3d4f70;
+  --accent:#ff3d5a;--accent2:#ffc107;--accent3:#00e676;--accent4:#29b6f6;
+  --eshop:#e4000f;--ps:#1565c0;--xbox:#2e7d32;--steam:#1b9cfc;
+  --amazon:#ff9800;--mercari:#ff1744;
+  --card-radius:12px;
+}
+[data-theme="light"]{
+  --bg:#f0f4ff;--surface:#ffffff;--surface2:#eef2ff;--surface3:#e3e8f8;
+  --border:#d0d9f0;--border2:#b8c5e8;
+  --text:#1a2340;--text2:#4a5a80;--text3:#8a9ab8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;min-height:100vh;overflow-x:hidden;transition:background 0.3s,color 0.3s}
+
+/* グリッド背景 */
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(41,182,246,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(41,182,246,.025) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+
+/* ===== HEADER ===== */
+header{position:sticky;top:0;z-index:300;background:rgba(7,9,15,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:54px;display:flex;align-items:center;padding:0 16px;gap:16px}
+[data-theme="light"] header{background:rgba(240,244,255,.97)}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;flex-shrink:0;background:linear-gradient(135deg,#fff 30%,var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+[data-theme="light"] .logo{background:linear-gradient(135deg,#1a2340 30%,var(--accent));-webkit-background-clip:text;background-clip:text}
+.logo em{-webkit-text-fill-color:var(--accent);font-style:normal}
+
+.hsearch{flex:1;max-width:420px;position:relative}
+.hsearch input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 14px 8px 38px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s}
+.hsearch input:focus{border-color:var(--accent4)}
+.hsearch input::placeholder{color:var(--text3)}
+.hsearch .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text3)}
+
+.hbtns{display:flex;gap:6px;margin-left:auto;align-items:center}
+.hbtn{padding:5px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);color:var(--text2);background:none;transition:all .15s;font-family:inherit;white-space:nowrap}
+.hbtn:hover{background:var(--surface2);color:var(--text)}
+.hbtn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.hbtn.primary:hover{opacity:.88}
+.theme-btn{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;flex-shrink:0}
+
+/* ===== AD TOP ===== */
+.ad-top{background:var(--surface);border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:11px;color:var(--text3);letter-spacing:1px;position:relative;z-index:1}
+.ad-top .ad-tag{background:var(--surface3);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:10px;color:var(--text3)}
+.ad-top-mock{width:min(728px,90%);height:32px;background:var(--surface2);border:1px dashed var(--border2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3)}
+
+/* ===== PLATFORM TABS ===== */
+.ptabs{background:rgba(7,9,15,.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);display:flex;overflow-x:auto;scrollbar-width:none;position:relative;z-index:1}
+.ptabs::-webkit-scrollbar{display:none}
+[data-theme="light"] .ptabs{background:rgba(240,244,255,.98)}
+.ptab{display:flex;align-items:center;gap:6px;padding:0 18px;height:42px;font-size:12px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;color:var(--text3);transition:all .15s;flex-shrink:0;user-select:none}
+.ptab:hover{color:var(--text2)}
+.ptab.on{color:var(--text);border-bottom-color:var(--accent)}
+.pdot{width:7px;height:7px;border-radius:50%}
+
+/* ===== MAIN LAYOUT ===== */
+.wrap{max-width:1300px;margin:0 auto;padding:18px 14px;display:grid;grid-template-columns:1fr 296px;gap:18px;position:relative;z-index:1}
+
+/* ===== FILTER BAR ===== */
+.fbar{grid-column:1/-1;display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.flabel{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;flex-shrink:0}
+.chip{padding:4px 11px;border-radius:20px;border:1px solid var(--border);font-size:11px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;background:none;font-family:inherit}
+.chip:hover{border-color:var(--border2);color:var(--text)}
+.chip.on{border-color:var(--accent);color:var(--accent);background:rgba(255,61,90,.08)}
+.sortbox{margin-left:auto;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--text2);font-family:inherit;font-size:11px;cursor:pointer;outline:none}
+
+/* ===== SECTION HEAD ===== */
+.shead{grid-column:1/-1;display:flex;align-items:center;gap:10px;margin-top:2px}
+.shead h2{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px}
+.scount{font-size:10px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2px 9px}
+.live-badge{font-size:9px;font-weight:700;color:var(--accent3);border:1px solid var(--accent3);border-radius:3px;padding:2px 6px;letter-spacing:1px;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ===== GAME LIST ===== */
+.glist{display:flex;flex-direction:column;gap:10px}
+
+.gcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-radius);overflow:hidden;transition:border-color .2s,box-shadow .2s;animation:fadeUp .3s ease both}
+.gcard:nth-child(2){animation-delay:.05s}
+.gcard:nth-child(3){animation-delay:.10s}
+.gcard:nth-child(4){animation-delay:.15s}
+.gcard:nth-child(5){animation-delay:.20s}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.gcard:hover{border-color:var(--border2);box-shadow:0 6px 32px rgba(0,0,0,.35)}
+
+/* カードトップ */
+.ctop{display:flex;cursor:pointer;user-select:none}
+.cthumb{width:110px;min-width:110px;height:84px;background:var(--surface2);display:flex;align-items:center;justify-content:center;font-size:36px;position:relative;flex-shrink:0;overflow:hidden}
+.cthumb::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 60%,rgba(0,0,0,.4))}
+.best-src{position:absolute;bottom:5px;left:5px;z-index:1;font-size:9px;font-weight:700;padding:2px 5px;border-radius:3px;letter-spacing:.3px}
+.wish-btn{position:absolute;top:5px;right:5px;z-index:2;width:22px;height:22px;background:rgba(0,0,0,.5);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;transition:transform .2s;color:var(--text2)}
+.wish-btn:hover{transform:scale(1.2)}
+.wish-btn.on{color:var(--accent)}
+
+.cbody{flex:1;padding:10px 14px;display:flex;flex-direction:column;justify-content:space-between;min-width:0}
+.ctitle-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.gtitle{font-size:13px;font-weight:700;line-height:1.3;flex:1;min-width:0}
+.ppills{display:flex;gap:3px;flex-wrap:wrap;flex-shrink:0;margin-top:3px}
+.pp{font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;letter-spacing:.3px}
+.pp-sw{background:rgba(228,0,15,.15);color:#ff7b87;border:1px solid rgba(228,0,15,.2)}
+.pp-ps{background:rgba(21,101,192,.2);color:#6baaf0;border:1px solid rgba(21,101,192,.3)}
+.pp-xb{background:rgba(46,125,50,.2);color:#66c466;border:1px solid rgba(46,125,50,.3)}
+.pp-st{background:rgba(27,156,252,.15);color:#5ab8ff;border:1px solid rgba(27,156,252,.2)}
+.cmeta{font-size:10px;color:var(--text3);margin-top:3px}
+.mtag{font-size:8px;font-weight:700;padding:1px 5px;border-radius:3px;background:rgba(138,91,246,.2);color:#b8a0f0;border:1px solid rgba(138,91,246,.2);margin-left:4px}
+
+.psum{display:flex;align-items:baseline;gap:7px;margin-top:6px;flex-wrap:wrap}
+.orig{font-size:11px;color:var(--text3);text-decoration:line-through}
+.bprice{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:1px;color:var(--accent2);line-height:1}
+.dtag{font-size:10px;font-weight:700;padding:2px 6px;border-radius:3px;background:var(--accent);color:#fff;font-family:'Bebas Neue',sans-serif;letter-spacing:1px}
+.rtag{font-size:9px;padding:2px 6px;border-radius:3px;border:1px solid var(--accent3);color:var(--accent3);background:rgba(0,230,118,.07);font-weight:700}
+.dead{font-size:9px;padding:2px 6px;border-radius:3px;border:1px solid var(--accent);color:var(--accent);background:rgba(255,61,90,.07)}
+.exbtn{font-size:11px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:5px;padding:3px 8px;cursor:pointer;transition:all .15s;flex-shrink:0;white-space:nowrap;align-self:flex-start;font-family:inherit}
+.exbtn:hover{border-color:var(--border2);color:var(--text2)}
+
+/* ===== PANEL ===== */
+.panel{display:none;border-top:1px solid var(--border)}
+.panel.open{display:block}
+.pin{padding:16px;background:var(--surface2)}
+
+/* タブ */
+.ptabs2{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto;scrollbar-width:none}
+.ptabs2::-webkit-scrollbar{display:none}
+.pt2{padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;color:var(--text3);white-space:nowrap;transition:all .15s;font-family:inherit;background:none;border-top:none;border-left:none;border-right:none}
+.pt2:hover{color:var(--text2)}
+.pt2.on{color:var(--accent4);border-bottom-color:var(--accent4)}
+
+.tab-content{display:none}
+.tab-content.on{display:block}
+
+/* 価格テーブル共通 */
+.ptitle{font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px}
+.psec{margin-bottom:14px}
+.psec:last-child{margin-bottom:0}
+.phead{display:flex;align-items:center;gap:7px;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.picon{width:18px;height:18px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0}
+.pname{font-size:11px;font-weight:700;color:var(--text2)}
+.ptable{width:100%;border-collapse:collapse}
+.ptable th{font-size:9px;color:var(--text3);text-align:left;padding:3px 7px;letter-spacing:.5px}
+.ptable td{font-size:11px;padding:6px 7px;border-bottom:1px solid rgba(255,255,255,.03);vertical-align:middle}
+[data-theme="light"] .ptable td{border-bottom-color:rgba(0,0,0,.05)}
+.ptable tr:last-child td{border-bottom:none}
+.pval{font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:.5px}
+.pval.cheap{color:var(--accent2)}
+.poff{font-size:10px;color:var(--text3)}
+.poff.hi{color:var(--accent);font-weight:700}
+.pdl-soon{color:var(--accent);font-size:10px;font-weight:700}
+.pdl-ok{color:var(--text3);font-size:10px}
+.pnote{font-size:9px;color:var(--text3)}
+
+/* 買い時判定 */
+.timing-box{background:var(--surface3);border:1px solid var(--border2);border-radius:8px;padding:12px;margin-bottom:14px}
+.timing-title{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.timing-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;margin-bottom:8px}
+.timing-now{background:rgba(0,230,118,.15);border:1px solid var(--accent3);color:var(--accent3)}
+.timing-wait{background:rgba(255,193,7,.12);border:1px solid var(--accent2);color:var(--accent2)}
+.timing-desc{font-size:11px;color:var(--text2);line-height:1.5}
+.timing-stats{display:flex;gap:12px;margin-top:8px;flex-wrap:wrap}
+.timing-stat{font-size:10px;color:var(--text3)}
+.timing-stat strong{color:var(--text2)}
+
+/* グラフ */
+.chart-wrap{position:relative;height:140px;margin-top:6px}
+
+/* 過去最安値履歴 */
+.hist-sec{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.hist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-top:8px}
+.hitem{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:7px 10px}
+.hplat{font-size:9px;color:var(--text3);margin-bottom:2px}
+.hprice{font-family:'Bebas Neue',sans-serif;font-size:14px;color:var(--text)}
+.hdate{font-size:9px;color:var(--text3);margin-top:1px}
+.hnew{color:var(--accent3);font-weight:700}
+
+/* アフィリエイト・購入ボタン */
+.buy-sec{margin-top:14px;padding-top:12px;border-top:1px solid var(--border)}
+.buy-title{font-size:10px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.buy-grid{display:flex;gap:8px;flex-wrap:wrap}
+.buy-btn{display:flex;align-items:center;gap:7px;padding:8px 16px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;border:none;font-family:inherit;transition:all .2s;text-decoration:none;white-space:nowrap}
+.buy-amazon{background:linear-gradient(135deg,#ff9900,#e67e00);color:#000}
+.buy-amazon:hover{opacity:.88;transform:translateY(-1px)}
+.buy-rakuten{background:linear-gradient(135deg,#bf0000,#8b0000);color:#fff}
+.buy-rakuten:hover{opacity:.88;transform:translateY(-1px)}
+.buy-prepaid{background:linear-gradient(135deg,var(--surface3),var(--surface2));color:var(--text2);border:1px solid var(--border2)}
+.buy-prepaid:hover{border-color:var(--accent4);color:var(--accent4)}
+.buy-note{font-size:9px;color:var(--text3);margin-top:6px;line-height:1.5}
+.prepaid-tip{background:rgba(41,182,246,.08);border:1px solid rgba(41,182,246,.2);border-radius:6px;padding:8px 10px;margin-top:8px;font-size:11px;color:var(--text2);line-height:1.5}
+.prepaid-tip strong{color:var(--accent4)}
+
+/* フリマ投稿 */
+.frima-form{background:var(--surface);border:1px solid var(--border);border-radius:7px;padding:10px;margin-top:8px}
+.ff-title{font-size:10px;color:var(--text3);margin-bottom:7px;letter-spacing:.5px}
+.ff-row{display:flex;gap:6px}
+.ff-input{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:5px 8px;color:var(--text);font-family:inherit;font-size:11px;outline:none;min-width:0}
+.ff-input:focus{border-color:var(--accent4)}
+.ff-sel{background:var(--bg);border:1px solid var(--border);border-radius:5px;padding:5px 8px;color:var(--text);font-family:inherit;font-size:11px;outline:none;cursor:pointer}
+.ff-btn{background:var(--accent4);color:#fff;border:none;border-radius:5px;padding:5px 12px;font-family:inherit;font-size:11px;cursor:pointer;font-weight:700;transition:opacity .15s}
+.ff-btn:hover{opacity:.85}
+.frima-list{margin-top:8px}
+.fl-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:10px;color:var(--text2);gap:8px}
+[data-theme="light"] .fl-row{border-bottom-color:rgba(0,0,0,.07)}
+.fl-row:last-child{border-bottom:none}
+.fl-site{color:var(--text3)}
+.fl-price{font-family:'Bebas Neue',sans-serif;font-size:13px;color:var(--text)}
+.fl-date{color:var(--text3);font-size:9px}
+
+/* メーカーセール頻度 */
+.maker-freq{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.mf-row{display:flex;align-items:center;gap:8px}
+.mf-name{font-size:11px;color:var(--text2);width:90px;flex-shrink:0}
+.mf-bar-wrap{flex:1;background:var(--surface3);border-radius:10px;height:6px;overflow:hidden}
+.mf-bar{height:100%;border-radius:10px;background:linear-gradient(90deg,var(--accent4),var(--accent3));transition:width .6s ease}
+.mf-count{font-size:10px;color:var(--text3);white-space:nowrap}
+
+/* ===== INLINE AD ===== */
+.ad-inline{background:var(--surface);border:1px dashed var(--border2);border-radius:8px;height:80px;display:flex;align-items:center;justify-content:center;gap:8px;font-size:10px;color:var(--text3);letter-spacing:1px}
+
+/* ===== SIDEBAR ===== */
+.sb{display:flex;flex-direction:column;gap:12px}
+.widget{background:var(--surface);border:1px solid var(--border);border-radius:var(--card-radius);overflow:hidden}
+.whead{padding:10px 14px;border-bottom:1px solid var(--border);font-family:'Bebas Neue',sans-serif;font-size:13px;letter-spacing:2px;color:var(--text2);display:flex;align-items:center;gap:7px}
+.wbody{padding:10px 14px}
+
+/* ウィッシュリスト */
+.wl-item{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;gap:8px}
+[data-theme="light"] .wl-item{border-bottom-color:rgba(0,0,0,.07)}
+.wl-item:last-child{border-bottom:none}
+.wl-title{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wl-price{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--accent2);flex-shrink:0}
+.wl-rm{background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;flex-shrink:0;transition:color .15s}
+.wl-rm:hover{color:var(--accent)}
+.wl-empty{font-size:11px;color:var(--text3);text-align:center;padding:8px 0}
+
+/* 急上昇 */
+.hot-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:8px}
+[data-theme="light"] .hot-row{border-bottom-color:rgba(0,0,0,.07)}
+.hot-row:last-child{border-bottom:none}
+.hi{flex:1;min-width:0}
+.ht{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hm{font-size:9px;color:var(--text3);margin-top:1px}
+.hp{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--accent);flex-shrink:0}
+
+/* 最安値更新 */
+.rec-row{display:flex;gap:6px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:11px}
+[data-theme="light"] .rec-row{border-bottom-color:rgba(0,0,0,.07)}
+.rec-row:last-child{border-bottom:none}
+.rdot{color:var(--accent3);flex-shrink:0}
+.rtxt{color:var(--text2);line-height:1.4}
+.rtxt strong{color:var(--accent2)}
+
+/* 終了間近 */
+.dead-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:8px}
+[data-theme="light"] .dead-row{border-bottom-color:rgba(0,0,0,.07)}
+.dead-row:last-child{border-bottom:none}
+.di{flex:1;min-width:0}
+.dt{font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dd{font-size:9px;margin-top:1px}
+.dd.soon{color:var(--accent);font-weight:700}
+.dd.ok{color:var(--accent2)}
+.dp{font-family:'Bebas Neue',sans-serif;font-size:16px;color:var(--text2);flex-shrink:0}
+
+/* 年間カレンダー */
+.cal-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04)}
+[data-theme="light"] .cal-row{border-bottom-color:rgba(0,0,0,.07)}
+.cal-row:last-child{border-bottom:none}
+.cal-mo{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text3);width:28px;flex-shrink:0;padding-top:2px}
+.cal-mo.now{color:var(--accent2)}
+.cal-evs{flex:1;display:flex;flex-direction:column;gap:3px}
+.cal-ev{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text2)}
+.cdot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.cal-ev.now-ev{color:var(--accent2)}
+
+/* 収益化ヒント */
+.tip-box{background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:10px;font-size:10px;color:var(--text3);line-height:1.6;margin-top:6px}
+.tip-box strong{color:var(--accent4)}
+
+/* 広告サイドバー */
+.ad-side{background:var(--surface);border:1px dashed var(--border2);border-radius:var(--card-radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;font-size:10px;color:var(--text3);letter-spacing:1px}
+.ad-side .atag{font-size:8px;background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:1px 5px}
+
+/* 通知モーダル */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;padding:16px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:24px;max-width:400px;width:100%;animation:modalIn .25s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--text2);margin-bottom:18px}
+.modal-field{margin-bottom:12px}
+.modal-label{font-size:11px;color:var(--text3);margin-bottom:4px;display:block;letter-spacing:.5px}
+.modal-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:9px 12px;color:var(--text);font-family:inherit;font-size:13px;outline:none;transition:border-color .2s}
+.modal-input:focus{border-color:var(--accent4)}
+.modal-row{display:flex;gap:8px;margin-top:6px}
+.modal-btn{flex:1;padding:10px;border-radius:8px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.modal-ok{background:var(--accent4);color:#fff}
+.modal-ok:hover{opacity:.88}
+.modal-cancel{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.modal-cancel:hover{border-color:var(--border2)}
+.modal-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer}
+
+/* ===== FOOTER ===== */
+footer{border-top:1px solid var(--border);padding:20px;text-align:center;font-size:10px;color:var(--text3);position:relative;z-index:1;line-height:2}
+
+/* ===== MOBILE ===== */
+@media(max-width:900px){
+  .wrap{grid-template-columns:1fr}
+  .sb{display:none}
+  .cthumb{width:90px;min-width:90px;height:72px;font-size:30px}
+  .hbtns .hbtn:not(.primary):not(.theme-btn){display:none}
+  .bprice{font-size:20px}
+}
+@media(max-width:480px){
+  .cthumb{display:none}
+  .buy-btn{font-size:11px;padding:7px 12px}
+}
+</style>
+</head>
+<body>
+
+<!-- 通知モーダル -->
+<div class="modal-overlay" id="notifModal">
+  <div class="modal" style="position:relative">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">🔔 価格通知登録</div>
+    <div class="modal-sub">希望価格を下回ったらメールでお知らせします</div>
+    <div class="modal-field">
+      <label class="modal-label">メールアドレス</label>
+      <input class="modal-input" type="email" placeholder="example@gmail.com" id="notifEmail">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">通知したいゲーム</label>
+      <input class="modal-input" type="text" placeholder="例）バイオハザード RE:4" id="notifGame">
+    </div>
+    <div class="modal-field">
+      <label class="modal-label">希望価格（円）</label>
+      <input class="modal-input" type="number" placeholder="例）1500" id="notifPrice">
+    </div>
+    <div class="modal-row">
+      <button class="modal-btn modal-cancel" onclick="closeModal()">キャンセル</button>
+      <button class="modal-btn modal-ok" onclick="registerNotif()">登録する</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">ゲー<em>セル</em></div>
+  <div class="hsearch">
+    <span class="si">🔍</span>
+    <input type="text" placeholder="タイトル・メーカーで検索..." id="searchInput" oninput="filterCards()">
+  </div>
+  <div class="hbtns">
+    <button class="hbtn" onclick="showTab('wishlist-tab')">❤️ リスト(<span id="wlCount">0</span>)</button>
+    <button class="hbtn primary" onclick="openModal()">🔔 通知登録</button>
+    <button class="theme-btn" onclick="toggleTheme()" title="ダーク/ライト切替">🌙</button>
+  </div>
+</header>
+
+<!-- 広告バナー -->
+<div class="ad-top">
+  <span class="ad-tag">広告</span>
+  <div class="ad-top-mock">Google AdSense — 728×90px リーダーボード広告（審査通過後に表示）</div>
+</div>
+
+<!-- プラットフォームタブ -->
+<div class="ptabs" id="mainTabs">
+  <div class="ptab on" onclick="setMainTab(this,'all')"><span class="pdot" style="background:var(--accent)"></span>すべて</div>
+  <div class="ptab" onclick="setMainTab(this,'eshop')"><span class="pdot" style="background:var(--eshop)"></span>🎮 eショップ</div>
+  <div class="ptab" onclick="setMainTab(this,'ps')"><span class="pdot" style="background:var(--ps)"></span>🎯 PS Store</div>
+  <div class="ptab" onclick="setMainTab(this,'xbox')"><span class="pdot" style="background:var(--xbox)"></span>🟩 Xbox</div>
+  <div class="ptab" onclick="setMainTab(this,'steam')"><span class="pdot" style="background:var(--steam)"></span>🖥️ Steam</div>
+  <div class="ptab" onclick="setMainTab(this,'package')"><span class="pdot" style="background:var(--amazon)"></span>📦 パッケージ</div>
+  <div class="ptab" onclick="setMainTab(this,'frima')"><span class="pdot" style="background:var(--mercari)"></span>🏪 フリマ相場</div>
+  <div class="ptab" onclick="setMainTab(this,'wishlist-tab')"><span class="pdot" style="background:var(--accent3)"></span>❤️ ウィッシュリスト</div>
+</div>
+
+<div class="wrap">
+
+  <!-- フィルター -->
+  <div class="fbar">
+    <span class="flabel">絞込</span>
+    <div class="chip on" onclick="this.classList.toggle('on')">過去最安値</div>
+    <div class="chip" onclick="this.classList.toggle('on')">-70%以上</div>
+    <div class="chip" onclick="this.classList.toggle('on')">終了間近</div>
+    <div class="chip" onclick="this.classList.toggle('on')">メーカーセール</div>
+    <div class="chip" onclick="this.classList.toggle('on')">全機種対応</div>
+    <div class="chip" onclick="this.classList.toggle('on')">1,000円以下</div>
+    <select class="sortbox" onchange="sortCards(this.value)">
+      <option value="disc">割引率が高い順</option>
+      <option value="price">最安値（絶対額）順</option>
+      <option value="dead">終了が近い順</option>
+    </select>
+  </div>
+
+  <!-- セクション見出し -->
+  <div class="shead">
+    <h2>現在セール中</h2>
+    <span class="scount" id="cardCount">5タイトル</span>
+    <span class="live-badge">● LIVE</span>
+  </div>
+
+  <!-- ===== ゲームリスト ===== -->
+  <div class="glist" id="gameList">
+
+    <!-- ===== カード1 ===== -->
+    <div class="gcard" data-disc="70" data-price="2637" data-dead="8" data-plat="eshop ps xbox steam">
+      <div class="ctop" onclick="togglePanel(this)">
+        <div class="cthumb">
+          🧟
+          <button class="wish-btn" onclick="toggleWish(event,this,'バイオハザード RE:4','¥2,637')">♡</button>
+          <div class="best-src" style="background:rgba(228,0,15,.85);color:#fff">eショップ最安</div>
+        </div>
+        <div class="cbody">
+          <div class="ctitle-row">
+            <div>
+              <div class="gtitle">バイオハザード RE:4 ゴールドエディション</div>
+              <div class="ppills">
+                <span class="pp pp-sw">Switch</span><span class="pp pp-ps">PS5/4</span><span class="pp pp-xb">Xbox</span><span class="pp pp-st">Steam</span>
+              </div>
+              <div class="cmeta">カプコン<span class="mtag">メーカーセール</span></div>
+            </div>
+            <button class="exbtn">詳細 ▼</button>
+          </div>
+          <div class="psum">
+            <span class="orig">¥8,789</span>
+            <span class="bprice">¥2,637</span>
+            <span class="dtag">-70%</span>
+            <span class="rtag">🏆 過去最安値</span>
+            <span class="dead">⏰ 5/6まで</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="pin">
+
+          <!-- 買い時判定 -->
+          <div class="timing-box">
+            <div class="timing-title">🎯 買い時判定</div>
+            <div class="timing-badge timing-now">✅ 今が買い時！過去最安値更新中</div>
+            <div class="timing-desc">カプコンセールは年4〜5回開催。-70%は過去最高割引率で次回いつ来るか不明。迷うなら今がベスト。</div>
+            <div class="timing-stats">
+              <div class="timing-stat">年間セール回数 <strong>4〜5回</strong></div>
+              <div class="timing-stat">過去最大割引 <strong>-70%（今回）</strong></div>
+              <div class="timing-stat">前回セール <strong>2025年12月</strong></div>
+            </div>
+          </div>
+
+          <!-- パネル内タブ -->
+          <div class="ptabs2">
+            <button class="pt2 on" onclick="switchTab(this,'price-1')">💴 価格比較</button>
+            <button class="pt2" onclick="switchTab(this,'graph-1')">📈 価格推移</button>
+            <button class="pt2" onclick="switchTab(this,'frima-1')">🏪 フリマ相場</button>
+            <button class="pt2" onclick="switchTab(this,'buy-1')">🛒 購入する</button>
+            <button class="pt2" onclick="switchTab(this,'maker-1')">🏢 メーカー情報</button>
+          </div>
+
+          <!-- 価格比較タブ -->
+          <div class="tab-content on" id="price-1">
+            <div class="ptitle">全プラットフォーム価格比較（2026年4月現在）</div>
+            <div class="psec">
+              <div class="phead"><div class="picon" style="background:rgba(228,0,15,.2)">🎮</div><span class="pname">Nintendo eショップ</span></div>
+              <table class="ptable"><tr><th>版</th><th>現在価格</th><th>割引</th><th>期限</th><th>備考</th></tr>
+              <tr><td>Switch版</td><td><span class="pval cheap">¥2,637</span></td><td><span class="poff hi">-70%</span></td><td><span class="pdl-soon">5/6 23:59</span></td><td class="pnote">CAPCOM SPRING SALE</td></tr></table>
+            </div>
+            <div class="psec">
+              <div class="phead"><div class="picon" style="background:rgba(21,101,192,.2)">🎯</div><span class="pname">PlayStation Store</span></div>
+              <table class="ptable"><tr><th>版</th><th>現在価格</th><th>割引</th><th>期限</th><th>備考</th></tr>
+              <tr><td>PS5版</td><td><span class="pval cheap">¥2,637</span></td><td><span class="poff hi">-70%</span></td><td><span class="pdl-soon">5/6 23:59</span></td><td class="pnote">同時開催</td></tr>
+              <tr><td>PS4版</td><td><span class="pval">¥2,637</span></td><td><span class="poff hi">-70%</span></td><td><span class="pdl-soon">5/6 23:59</span></td><td class="pnote">PS Plus加入で追加割引あり</td></tr></table>
+            </div>
+            <div class="psec">
+              <div class="phead"><div class="picon" style="background:rgba(46,125,50,.2)">🟩</div><span class="pname">Xbox / Microsoft Store</span></div>
+              <table class="ptable"><tr><th>版</th><th>現在価格</th><th>割引</th><th>期限</th><th>備考</th></tr>
+              <tr><td>Xbox Series版</td><td><span class="pval">¥3,080</span></td><td><span class="poff hi">-65%</span></td><td><span class="pdl-soon">5/4まで</span></td><td class="pnote">Capcom Publisher Sale</td></tr></table>
+            </div>
+            <div class="psec">
+              <div class="phead"><div class="picon" style="background:rgba(27,156,252,.15)">🖥️</div><span class="pname">Steam</span></div>
+              <table class="ptable"><tr><th>版</th><th>現在価格</th><th>割引</th><th>期限</th><th>備考</th></tr>
+              <tr><td>PC版</td><td><span class="pval">¥3,520</span></td><td><span class="poff hi">-60%</span></td><td><span class="pdl-ok">5/2まで</span></td><td class="pnote"></td></tr></table>
+            </div>
+            <div class="hist-sec">
+              <div class="ptitle">過去最安値履歴</div>
+              <div class="hist-grid">
+                <div class="hitem"><div class="hplat">🎮 eショップ</div><div class="hprice">¥2,637</div><div class="hdate">2026年4月 <span class="hnew">←最安</span></div></div>
+                <div class="hitem"><div class="hplat">🎯 PS Store</div><div class="hprice">¥2,637</div><div class="hdate">2025年12月 (-70%)</div></div>
+                <div class="hitem"><div class="hplat">🟩 Xbox</div><div class="hprice">¥3,080</div><div class="hdate">2026年4月 <span class="hnew">←最安</span></div></div>
+                <div class="hitem"><div class="hplat">🖥️ Steam</div><div class="hprice">¥3,520</div><div class="hdate">2025年6月 (-60%)</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 価格推移グラフ -->
+          <div class="tab-content" id="graph-1">
+            <div class="ptitle">価格推移グラフ（eショップ）</div>
+            <div class="chart-wrap"><canvas id="chart1"></canvas></div>
+          </div>
+
+          <!-- フリマ相場タブ -->
+          <div class="tab-content" id="frima-1">
+            <div class="ptitle">フリマ落札相場（ユーザー投稿）</div>
+            <table class="ptable"><tr><th>サービス</th><th>相場</th><th>機種</th><th>集計</th></tr>
+            <tr><td>メルカリ</td><td><span class="pval">¥4,200</span></td><td class="pnote">Switch版</td><td class="pnote">過去30日平均</td></tr>
+            <tr><td>ヤフオク</td><td><span class="pval">¥3,900</span></td><td class="pnote">PS5版</td><td class="pnote">過去30日落札平均</td></tr></table>
+            <div class="frima-form">
+              <div class="ff-title">💡 落札価格を投稿する（集合知で相場を作ろう）</div>
+              <div class="ff-row">
+                <select class="ff-sel"><option>メルカリ</option><option>ヤフオク</option><option>ラクマ</option></select>
+                <input class="ff-input" type="number" placeholder="落札額 ¥" style="max-width:100px">
+                <select class="ff-sel"><option>Switch</option><option>PS5</option><option>PS4</option></select>
+                <button class="ff-btn" onclick="submitFrima(this)">投稿</button>
+              </div>
+              <div class="frima-list" id="frimaList1">
+                <div class="fl-row"><span class="fl-site">メルカリ / Switch</span><span class="fl-price">¥4,100</span><span class="fl-date">2026/04/25</span></div>
+                <div class="fl-row"><span class="fl-site">ヤフオク / PS5</span><span class="fl-price">¥3,800</span><span class="fl-date">2026/04/22</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 購入タブ -->
+          <div class="tab-content" id="buy-1">
+            <div class="buy-sec" style="margin-top:0;padding-top:0;border-top:none">
+              <div class="buy-title">📦 パッケージ版を購入する</div>
+              <div class="buy-grid">
+                <a class="buy-btn buy-amazon" href="#" onclick="return false">🛒 Amazon ¥4,980</a>
+                <a class="buy-btn buy-rakuten" href="#" onclick="return false">🛍️ 楽天 ¥5,100</a>
+              </div>
+              <div class="buy-note">※パッケージ版はリンク経由での購入でアフィリエイト収益が発生します（サイト運営費に充てています）</div>
+
+              <div class="buy-title" style="margin-top:14px">💳 eショップカード・プリペイドでお得に買う</div>
+              <div class="prepaid-tip">
+                💡 <strong>セールで買うならプリペイドカードがおすすめ！</strong><br>
+                コンビニやAmazonでeショップカードを購入してチャージすることで、クレカ不要でセール価格で購入できます。楽天カード等でポイント付与もあり。
+              </div>
+              <div class="buy-grid" style="margin-top:8px">
+                <a class="buy-btn buy-prepaid" href="#" onclick="return false">🎮 eショップカード(Amazon)</a>
+                <a class="buy-btn buy-prepaid" href="#" onclick="return false">🎯 PSNカード(Amazon)</a>
+              </div>
+              <div class="buy-note" style="margin-top:6px">※プリペイドカードもAmazonアフィリエイト対象です</div>
+            </div>
+          </div>
+
+          <!-- メーカー情報タブ -->
+          <div class="tab-content" id="maker-1">
+            <div class="ptitle">🏢 カプコン セール頻度・傾向</div>
+            <div class="maker-freq">
+              <div class="mf-row"><span class="mf-name">年間セール回数</span><div class="mf-bar-wrap"><div class="mf-bar" style="width:80%"></div></div><span class="mf-count">4〜5回/年</span></div>
+              <div class="mf-row"><span class="mf-name">最大割引率</span><div class="mf-bar-wrap"><div class="mf-bar" style="width:87%"></div></div><span class="mf-count">最大87%OFF</span></div>
+              <div class="mf-row"><span class="mf-name">セール頻度</span><div class="mf-bar-wrap"><div class="mf-bar" style="width:90%"></div></div><span class="mf-count">多い</span></div>
+            </div>
+            <div style="margin-top:10px;font-size:10px;color:var(--text3);line-height:1.7">
+              主なセール：SPRING / GOLDEN WEEK / SUMMER / HOLIDAY<br>
+              GW・年末は特に大型セールの確率が高い。-70%以上はGW・HOLIDAYに多い。<br>
+              PS・Switch・Xboxで同時開催されることがほとんど。
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== カード2：ペルソナ5R ===== -->
+    <div class="gcard" data-disc="75" data-price="2469" data-dead="10" data-plat="eshop ps xbox steam">
+      <div class="ctop" onclick="togglePanel(this)">
+        <div class="cthumb">
+          ⚔️
+          <button class="wish-btn" onclick="toggleWish(event,this,'ペルソナ5 ザ・ロイヤル','¥2,469')">♡</button>
+          <div class="best-src" style="background:rgba(21,101,192,.9);color:#fff">全機種最安値</div>
+        </div>
+        <div class="cbody">
+          <div class="ctitle-row">
+            <div>
+              <div class="gtitle">ペルソナ5 ザ・ロイヤル</div>
+              <div class="ppills"><span class="pp pp-sw">Switch</span><span class="pp pp-ps">PS5/4</span><span class="pp pp-xb">Xbox</span><span class="pp pp-st">Steam</span></div>
+              <div class="cmeta">アトラス / セガ<span class="mtag">メーカーセール</span></div>
+            </div>
+            <button class="exbtn">詳細 ▼</button>
+          </div>
+          <div class="psum">
+            <span class="orig">¥9,878</span>
+            <span class="bprice">¥2,469</span>
+            <span class="dtag">-75%</span>
+            <span class="rtag">🏆 過去最安値</span>
+            <span class="dead">⏰ 5/8まで</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="pin">
+          <div class="timing-box">
+            <div class="timing-title">🎯 買い時判定</div>
+            <div class="timing-badge timing-now">✅ 過去最安値・即買い推奨</div>
+            <div class="timing-desc">全プラットフォームで同時に-75%は過去初。アトラスセールは年2〜3回だが、ここまでの割引は珍しい。</div>
+          </div>
+          <div class="ptabs2">
+            <button class="pt2 on" onclick="switchTab(this,'price-2')">💴 価格比較</button>
+            <button class="pt2" onclick="switchTab(this,'graph-2')">📈 価格推移</button>
+            <button class="pt2" onclick="switchTab(this,'frima-2')">🏪 フリマ相場</button>
+            <button class="pt2" onclick="switchTab(this,'buy-2')">🛒 購入する</button>
+            <button class="pt2" onclick="switchTab(this,'maker-2')">🏢 メーカー情報</button>
+          </div>
+          <div class="tab-content on" id="price-2">
+            <div class="ptitle">全プラットフォーム価格比較</div>
+            <div class="psec"><div class="phead"><div class="picon" style="background:rgba(228,0,15,.2)">🎮</div><span class="pname">Nintendo eショップ</span></div>
+            <table class="ptable"><tr><th>版</th><th>価格</th><th>割引</th><th>期限</th></tr><tr><td>Switch版</td><td><span class="pval cheap">¥2,469</span></td><td><span class="poff hi">-75%</span></td><td><span class="pdl-ok">5/8まで</span></td></tr></table></div>
+            <div class="psec"><div class="phead"><div class="picon" style="background:rgba(21,101,192,.2)">🎯</div><span class="pname">PlayStation Store</span></div>
+            <table class="ptable"><tr><th>版</th><th>価格</th><th>割引</th><th>期限</th></tr><tr><td>PS5版</td><td><span class="pval cheap">¥2,469</span></td><td><span class="poff hi">-75%</span></td><td><span class="pdl-ok">5/8まで</span></td></tr></table></div>
+            <div class="psec"><div class="phead"><div class="picon" style="background:rgba(46,125,50,.2)">🟩</div><span class="pname">Xbox</span></div>
+            <table class="ptable"><tr><th>版</th><th>価格</th><th>割引</th><th>期限</th></tr><tr><td>Xbox版</td><td><span class="pval">¥2,964</span></td><td><span class="poff hi">-70%</span></td><td><span class="pdl-ok">5/8まで</span></td></tr></table></div>
+            <div class="psec"><div class="phead"><div class="picon" style="background:rgba(27,156,252,.15)">🖥️</div><span class="pname">Steam</span></div>
+            <table class="ptable"><tr><th>版</th><th>価格</th><th>割引</th><th>期限</th></tr><tr><td>PC版</td><td><span class="pval cheap">¥2,469</span></td><td><span class="poff hi">-75%</span></td><td><span class="pdl-ok">5/8まで</span></td></tr></table></div>
+            <div class="hist-sec"><div class="ptitle">過去最安値履歴</div>
+            <div class="hist-grid">
+              <div class="hitem"><div class="hplat">🎮 eショップ</div><div class="hprice">¥2,469</div><div class="hdate">2026年4月 <span class="hnew">←最安</span></div></div>
+              <div class="hitem"><div class="hplat">🎯 PS Store</div><div class="hprice">¥3,951</div><div class="hdate">2025年10月 (-60%)</div></div>
+              <div class="hitem"><div class="hplat">🖥️ Steam</div><div class="hprice">¥2,469</div><div class="hdate">2026年4月 <span class="hnew">←最安</span></div></div>
+            </div></div>
+          </div>
+          <div class="tab-content" id="graph-2"><div class="ptitle">価格推移グラフ（eショップ）</div><div class="chart-wrap"><canvas id="chart2"></canvas></div></div>
+          <div class="tab-content" id="frima-2">
+            <div class="ptitle">フリマ落札相場</div>
+            <table class="ptable"><tr><th>サービス</th><th>相場</th><th>機種</th><th>集計</th></tr>
+            <tr><td>メルカリ</td><td><span class="pval">¥4,800</span></td><td class="pnote">PS5版</td><td class="pnote">過去30日平均</td></tr></table>
+            <div class="frima-form"><div class="ff-title">💡 落札価格を投稿</div>
+            <div class="ff-row"><select class="ff-sel"><option>メルカリ</option><option>ヤフオク</option></select><input class="ff-input" type="number" placeholder="¥" style="max-width:90px"><select class="ff-sel"><option>Switch</option><option>PS5</option></select><button class="ff-btn" onclick="submitFrima(this)">投稿</button></div></div>
+          </div>
+          <div class="tab-content" id="buy-2">
+            <div class="buy-sec" style="margin-top:0;padding-top:0;border-top:none">
+              <div class="buy-title">📦 パッケージ版</div>
+              <div class="buy-grid"><a class="buy-btn buy-amazon" href="#" onclick="return false">🛒 Amazon ¥5,280</a><a class="buy-btn buy-rakuten" href="#" onclick="return false">🛍️ 楽天 ¥5,500</a></div>
+              <div class="buy-title" style="margin-top:14px">💳 プリペイドカード</div>
+              <div class="prepaid-tip">💡 <strong>セール中の今がチャンス！</strong><br>eショップカード・PSNカードをAmazonで購入してチャージすると、クレカ不要でセール価格で購入できます。</div>
+              <div class="buy-grid" style="margin-top:8px"><a class="buy-btn buy-prepaid" href="#" onclick="return false">🎮 eショップカード</a><a class="buy-btn buy-prepaid" href="#" onclick="return false">🎯 PSNカード</a></div>
+            </div>
+          </div>
+          <div class="tab-content" id="maker-2">
+            <div class="ptitle">🏢 アトラス セール頻度</div>
+            <div class="maker-freq">
+              <div class="mf-row"><span class="mf-name">年間セール回数</span><div class="mf-bar-wrap"><div class="mf-bar" style="width:50%"></div></div><span class="mf-count">2〜3回/年</span></div>
+              <div class="mf-row"><span class="mf-name">最大割引率</span><div class="mf-bar-wrap"><div class="mf-bar" style="width:75%"></div></div><span class="mf-count">最大75%OFF</span></div>
+            </div>
+            <div style="margin-top:10px;font-size:10px;color:var(--text3);line-height:1.7">GW・年末が多い。-75%は過去最高割引率。次回は2026年末と予想。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 広告（インライン） -->
+    <div class="ad-inline">
+      <span style="color:var(--accent2)">📢 広告</span> Google AdSense — レスポンシブ（336×280 or 728×90）
+    </div>
+
+    <!-- ===== カード3：モンハンサンブレイク ===== -->
+    <div class="gcard" data-disc="75" data-price="1500" data-dead="2" data-plat="eshop ps xbox steam">
+      <div class="ctop" onclick="togglePanel(this)">
+        <div class="cthumb">
+          🦖
+          <button class="wish-btn" onclick="toggleWish(event,this,'モンスターハンターライズ：サンブレイク','¥1,500')">♡</button>
+          <div class="best-src" style="background:rgba(27,156,252,.9);color:#fff">Steam最安</div>
+        </div>
+        <div class="cbody">
+          <div class="ctitle-row">
+            <div>
+              <div class="gtitle">モンスターハンターライズ：サンブレイク</div>
+              <div class="ppills"><span class="pp pp-sw">Switch</span><span class="pp pp-ps">PS5/4</span><span class="pp pp-xb">Xbox</span><span class="pp pp-st">Steam</span></div>
+              <div class="cmeta">カプコン<span class="mtag">メーカーセール</span></div>
+            </div>
+            <button class="exbtn">詳細 ▼</button>
+          </div>
+          <div class="psum">
+            <span class="orig">¥5,990</span>
+            <span class="bprice">¥1,500</span>
+            <span class="dtag">-75%</span>
+            <span class="dead">⏰ 5/2まで あと2日</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="pin">
+          <div class="timing-box">
+            <div class="timing-title">🎯 買い時判定</div>
+            <div class="timing-badge timing-now">⚡ 今すぐ！残り2日</div>
+            <div class="timing-desc">Steam版が-75%で最安。終了まで残りわずか。カプコンセールは頻繁にあるが次回は未定。</div>
+          </div>
+          <div class="ptabs2">
+            <button class="pt2 on" onclick="switchTab(this,'price-3')">💴 価格比較</button>
+            <button class="pt2" onclick="switchTab(this,'graph-3')">📈 価格推移</button>
+            <button class="pt2" onclick="switchTab(this,'frima-3')">🏪 フリマ相場</button>
+            <button class="pt2" onclick="switchTab(this,'buy-3')">🛒 購入する</button>
+            <button class="pt2" onclick="switchTab(this,'maker-3')">🏢 メーカー情報</button>
+          </div>
+          <div class="tab-content on" id="price-3">
+            <div class="psec"><div class="phead"><div class="picon" style="background:rgba(228,0,15,.2)">🎮</div><span class="pname">eショップ</span></div>
+            <table class="ptable"><tr><th>版</th><th>価格</th><th>割引</th><th>期限</th></tr><tr><td>Switch版</td><td><span class="pval">¥1,797</span></td><td><span class="poff hi">-70%</span></td><td><span class="pdl-soon">5/2まで</span></td></tr></table></div>
+            <div class="psec"><div class="phead"><div class="picon" style="background:rgba(21,101,192,.2)">🎯</div><span class="pname">PS Store</span></div>
+            <table class="ptable"><tr><th>版</th><th>価格</th><th>割引</th><th>期限</th></tr><tr><td>PS5版</td><td><span class="pval">¥1,797</span></td><td><span class="poff hi">-70%</span></td><td><span class="pdl-soon">5/2まで</span></td></tr></table></div>
+            <div class="psec"><div class="phead"><div class="picon" style="background:rgba(27,156,252,.15)">🖥️</div><span class="pname">Steam</span></div>
+            <table class="ptable"><tr><th>版</th><th>価格</th><th>割引</th><th>期限</th></tr><tr><td>PC版</td><td><span class="pval cheap">¥1,500</span></td><td><span class="poff hi">-75%</span></td><td><span class="pdl-soon">5/2まで</span></td></tr></table></div>
+          </div>
+          <div class="tab-content" id="graph-3"><div class="ptitle">価格推移グラフ</div><div class="chart-wrap"><canvas id="chart3"></canvas></div></div>
+          <div class="tab-content" id="frima-3">
+            <table class="ptable"><tr><th>サービス</th><th>相場</th><th>機種</th></tr>
+            <tr><td>メルカリ</td><td><span class="pval">¥2,800</span></td><td class="pnote">Switch版</td></tr>
+            <tr><td>ヤフオク</td><td><span class="pval">¥2,500</span></td><td class="pnote">Switch版</td></tr></table>
+          </div>
+          <div class="tab-content" id="buy-3">
+            <div class="buy-sec" style="margin-top:0;padding-top:0;border-top:none">
+              <div class="buy-grid"><a class="buy-btn buy-amazon" href="#" onclick="return false">🛒 Amazon ¥3,200</a><a class="buy-btn buy-rakuten" href="#" onclick="return false">🛍️ 楽天 ¥3,450</a></div>
+              <div class="prepaid-tip" style="margin-top:10px">💡 <strong>Steam版が最安！</strong><br>PCゲームならSteamで直接購入。Steamウォレットカードもコンビニ・Amazonで購入可能。</div>
+              <div class="buy-grid" style="margin-top:8px"><a class="buy-btn buy-prepaid" href="#" onclick="return false">🖥️ Steamウォレットカード</a></div>
+            </div>
+          </div>
+          <div class="tab-content" id="maker-3"><div class="ptitle">🏢 カプコン セール頻度</div>
+          <div class="maker-freq"><div class="mf-row"><span class="mf-name">年間セール回数</span><div class="mf-bar-wrap"><div class="mf-bar" style="width:80%"></div></div><span class="mf-count">4〜5回/年</span></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== カード4：DQ11S ===== -->
+    <div class="gcard" data-disc="76" data-price="1320" data-dead="8" data-plat="eshop xbox steam">
+      <div class="ctop" onclick="togglePanel(this)">
+        <div class="cthumb">
+          🐉
+          <button class="wish-btn" onclick="toggleWish(event,this,'ドラゴンクエストXI S','¥1,320')">♡</button>
+        </div>
+        <div class="cbody">
+          <div class="ctitle-row">
+            <div>
+              <div class="gtitle">ドラゴンクエストXI S 過ぎ去りし時を求めて S</div>
+              <div class="ppills"><span class="pp pp-sw">Switch</span><span class="pp pp-ps">PS4</span><span class="pp pp-xb">Xbox</span><span class="pp pp-st">Steam</span></div>
+              <div class="cmeta">スクウェア・エニックス<span class="mtag">メーカーセール</span></div>
+            </div>
+            <button class="exbtn">詳細 ▼</button>
+          </div>
+          <div class="psum">
+            <span class="orig">¥5,478</span>
+            <span class="bprice">¥1,320</span>
+            <span class="dtag">-76%</span>
+            <span class="rtag">🏆 過去最安値</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="pin">
+          <div class="timing-box">
+            <div class="timing-title">🎯 買い時判定</div>
+            <div class="timing-badge timing-now">✅ 今が買い時！歴代最安値</div>
+            <div class="timing-desc">スクエニGWセールは毎年恒例。-76%はシリーズ最安値。価格は今後上がる可能性も。</div>
+          </div>
+          <div class="ptabs2">
+            <button class="pt2 on" onclick="switchTab(this,'price-4')">💴 価格比較</button>
+            <button class="pt2" onclick="switchTab(this,'graph-4')">📈 価格推移</button>
+            <button class="pt2" onclick="switchTab(this,'buy-4')">🛒 購入する</button>
+            <button class="pt2" onclick="switchTab(this,'maker-4')">🏢 メーカー情報</button>
+          </div>
+          <div class="tab-content on" id="price-4">
+            <div class="psec"><div class="phead"><div class="picon" style="background:rgba(228,0,15,.2)">🎮</div><span class="pname">eショップ</span></div>
+            <table class="ptable"><tr><th>版</th><th>価格</th><th>割引</th><th>期限</th></tr><tr><td>Switch版</td><td><span class="pval cheap">¥1,320</span></td><td><span class="poff hi">-76%</span></td><td><span class="pdl-ok">5/6まで</span></td></tr></table></div>
+            <div class="psec"><div class="phead"><div class="picon" style="background:rgba(27,156,252,.15)">🖥️</div><span class="pname">Steam</span></div>
+            <table class="ptable"><tr><th>版</th><th>価格</th><th>割引</th><th>期限</th></tr><tr><td>PC版</td><td><span class="pval cheap">¥1,320</span></td><td><span class="poff hi">-76%</span></td><td><span class="pdl-ok">5/6まで</span></td></tr></table></div>
+          </div>
+          <div class="tab-content" id="graph-4"><div class="ptitle">価格推移グラフ</div><div class="chart-wrap"><canvas id="chart4"></canvas></div></div>
+          <div class="tab-content" id="buy-4">
+            <div class="buy-sec" style="margin-top:0;padding-top:0;border-top:none">
+              <div class="buy-grid"><a class="buy-btn buy-amazon" href="#" onclick="return false">🛒 Amazon ¥2,800</a><a class="buy-btn buy-rakuten" href="#" onclick="return false">🛍️ 楽天 ¥3,000</a></div>
+              <div class="prepaid-tip" style="margin-top:10px">💡 <strong>プリペイドでセール購入がベスト！</strong><br>eショップカードをAmazonで購入してチャージ→セールで¥1,320で購入。パッケージ版の半額以下！</div>
+              <div class="buy-grid" style="margin-top:8px"><a class="buy-btn buy-prepaid" href="#" onclick="return false">🎮 eショップカード(Amazon)</a></div>
+            </div>
+          </div>
+          <div class="tab-content" id="maker-4">
+            <div class="ptitle">🏢 スクウェア・エニックス セール頻度</div>
+            <div class="maker-freq">
+              <div class="mf-row"><span class="mf-name">年間セール回数</span><div class="mf-bar-wrap"><div class="mf-bar" style="width:70%"></div></div><span class="mf-count">3〜4回/年</span></div>
+              <div class="mf-row"><span class="mf-name">最大割引率</span><div class="mf-bar-wrap"><div class="mf-bar" style="width:90%"></div></div><span class="mf-count">最大90%OFF</span></div>
+            </div>
+            <div style="margin-top:10px;font-size:10px;color:var(--text3);line-height:1.7">GW・年末・春に集中。FF/DQシリーズは揃って大幅割引されることが多い。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== カード5：ゼノブレイド3 ===== -->
+    <div class="gcard" data-disc="50" data-price="4389" data-dead="8" data-plat="eshop">
+      <div class="ctop" onclick="togglePanel(this)">
+        <div class="cthumb">
+          🏔️
+          <button class="wish-btn" onclick="toggleWish(event,this,'ゼノブレイド3','¥4,389')">♡</button>
+        </div>
+        <div class="cbody">
+          <div class="ctitle-row">
+            <div>
+              <div class="gtitle">ゼノブレイド3</div>
+              <div class="ppills"><span class="pp pp-sw">Switch</span></div>
+              <div class="cmeta">任天堂</div>
+            </div>
+            <button class="exbtn">詳細 ▼</button>
+          </div>
+          <div class="psum">
+            <span class="orig">¥8,778</span>
+            <span class="bprice">¥4,389</span>
+            <span class="dtag">-50%</span>
+            <span class="dead">⏰ 5/6まで</span>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="pin">
+          <div class="timing-box">
+            <div class="timing-title">🎯 買い時判定</div>
+            <div class="timing-badge timing-wait">⏳ 待てる人は待っても良い</div>
+            <div class="timing-desc">任天堂GWセールは毎年恒例。-50%は過去と同水準。急ぎでなければ次の年末セールを待つ選択肢もあり。</div>
+            <div class="timing-stats"><div class="timing-stat">過去最大割引 <strong>-50%</strong></div><div class="timing-stat">前回セール <strong>2025年12月</strong></div></div>
+          </div>
+          <div class="ptabs2">
+            <button class="pt2 on" onclick="switchTab(this,'price-5')">💴 価格比較</button>
+            <button class="pt2" onclick="switchTab(this,'graph-5')">📈 価格推移</button>
+            <button class="pt2" onclick="switchTab(this,'frima-5')">🏪 フリマ相場</button>
+            <button class="pt2" onclick="switchTab(this,'buy-5')">🛒 購入する</button>
+          </div>
+          <div class="tab-content on" id="price-5">
+            <div class="psec"><div class="phead"><div class="picon" style="background:rgba(228,0,15,.2)">🎮</div><span class="pname">eショップ</span></div>
+            <table class="ptable"><tr><th>版</th><th>価格</th><th>割引</th><th>期限</th></tr><tr><td>Switch版</td><td><span class="pval cheap">¥4,389</span></td><td><span class="poff hi">-50%</span></td><td><span class="pdl-ok">5/6まで</span></td></tr></table></div>
+            <div class="hist-sec"><div class="ptitle">過去最安値履歴</div>
+            <div class="hist-grid">
+              <div class="hitem"><div class="hplat">🎮 eショップ</div><div class="hprice">¥4,389</div><div class="hdate">2026年4月（現在）</div></div>
+              <div class="hitem"><div class="hplat">🎮 eショップ</div><div class="hprice">¥4,389</div><div class="hdate">2025年12月（-50%）</div></div>
+            </div></div>
+          </div>
+          <div class="tab-content" id="graph-5"><div class="ptitle">価格推移グラフ</div><div class="chart-wrap"><canvas id="chart5"></canvas></div></div>
+          <div class="tab-content" id="frima-5">
+            <table class="ptable"><tr><th>サービス</th><th>相場</th><th>機種</th></tr>
+            <tr><td>メルカリ</td><td><span class="pval">¥5,100</span></td><td class="pnote">Switch版</td></tr></table>
+            <div style="margin-top:8px;font-size:10px;color:var(--text3)">※フリマ相場よりeショップセールの方が安い！DL版を推奨</div>
+          </div>
+          <div class="tab-content" id="buy-5">
+            <div class="buy-sec" style="margin-top:0;padding-top:0;border-top:none">
+              <div class="buy-grid"><a class="buy-btn buy-amazon" href="#" onclick="return false">🛒 Amazon ¥5,800</a></div>
+              <div class="prepaid-tip" style="margin-top:10px">💡 <strong>eショップの方がパッケージより安い！</strong><br>セール中はDL版¥4,389 vs パッケージ新品¥5,800。eショップカードで購入がおすすめ。</div>
+              <div class="buy-grid" style="margin-top:8px"><a class="buy-btn buy-prepaid" href="#" onclick="return false">🎮 eショップカード</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /glist -->
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sb">
+
+    <!-- 広告 -->
+    <div class="ad-side" style="min-height:250px">
+      <div class="atag">広告</div>
+      <div style="font-size:26px">📢</div>
+      <div>Google AdSense</div>
+      <div style="font-size:9px">300×250px</div>
+    </div>
+
+    <!-- ウィッシュリスト -->
+    <div class="widget">
+      <div class="whead">❤️ ウィッシュリスト</div>
+      <div class="wbody" id="wishlistBody">
+        <div class="wl-empty">♡ を押してお気に入り登録！<br>価格通知も設定できます</div>
+      </div>
+    </div>
+
+    <!-- 急上昇 -->
+    <div class="widget">
+      <div class="whead">🔥 急上昇セール</div>
+      <div class="wbody">
+        <div class="hot-row"><div class="hi"><div class="ht">天穂のサクナヒメ</div><div class="hm">🎮 Switch / 🎯 PS</div></div><div class="hp">¥1,980</div></div>
+        <div class="hot-row"><div class="hi"><div class="ht">GUILTY GEAR STRIVE</div><div class="hm">🎮 / 🎯 / 🟩 / 🖥️</div></div><div class="hp">¥2,200</div></div>
+        <div class="hot-row"><div class="hi"><div class="ht">Frostpunk 2</div><div class="hm">🖥️ Steam</div></div><div class="hp">¥2,600</div></div>
+        <div class="hot-row"><div class="hi"><div class="ht">オクトパストラベラー2</div><div class="hm">🎮 / 🖥️</div></div><div class="hp">¥3,600</div></div>
+        <div class="hot-row"><div class="hi"><div class="ht">龍が如く8</div><div class="hm">🎯 PS / 🟩 Xbox</div></div><div class="hp">¥4,900</div></div>
+      </div>
+    </div>
+
+    <!-- 最安値更新 -->
+    <div class="widget">
+      <div class="whead">🏆 最安値更新中</div>
+      <div class="wbody">
+        <div class="rec-row"><span class="rdot">●</span><div class="rtxt">ペルソナ5R 全機種 <strong>-75%</strong> 過去最安！</div></div>
+        <div class="rec-row"><span class="rdot">●</span><div class="rtxt">バイオRE:4 eショップ <strong>-70%</strong> 最安更新</div></div>
+        <div class="rec-row"><span class="rdot">●</span><div class="rtxt">DQ11S 全機種 <strong>-76%</strong> 歴代最安！</div></div>
+        <div class="rec-row"><span class="rdot">●</span><div class="rtxt">シヴィライゼーション7 Steam <strong>-40%</strong> 初セール</div></div>
+      </div>
+    </div>
+
+    <!-- 終了間近 -->
+    <div class="widget">
+      <div class="whead">⏰ 終了間近</div>
+      <div class="wbody">
+        <div class="dead-row"><div class="di"><div class="dt">モンハンサンブレイク</div><div class="dd soon">⚡ あと2日 🎮🎯🟩🖥️</div></div><div class="dp">¥1,500</div></div>
+        <div class="dead-row"><div class="di"><div class="dt">Frostpunk 2</div><div class="dd soon">あと4日 🖥️</div></div><div class="dp">¥2,600</div></div>
+        <div class="dead-row"><div class="di"><div class="dt">バイオRE:4</div><div class="dd ok">あと8日 🎮🎯🟩</div></div><div class="dp">¥2,637</div></div>
+        <div class="dead-row"><div class="di"><div class="dt">DQ11S</div><div class="dd ok">あと8日 🎮🟩🖥️</div></div><div class="dp">¥1,320</div></div>
+        <div class="dead-row"><div class="di"><div class="dt">ペルソナ5R</div><div class="dd ok">あと10日 全機種</div></div><div class="dp">¥2,469</div></div>
+      </div>
+    </div>
+
+    <!-- 年間セールカレンダー -->
+    <div class="widget">
+      <div class="whead">📅 年間セール予報</div>
+      <div class="wbody">
+        <div class="cal-row"><div class="cal-mo">1</div><div class="cal-evs"><div class="cal-ev"><span class="cdot" style="background:var(--ps)"></span>PS BIG WINTER ②</div><div class="cal-ev"><span class="cdot" style="background:var(--eshop)"></span>カプコン HOLIDAY</div></div></div>
+        <div class="cal-row"><div class="cal-mo">2</div><div class="cal-evs"><div class="cal-ev"><span class="cdot" style="background:var(--ps)"></span>PS 旧正月セール</div></div></div>
+        <div class="cal-row"><div class="cal-mo">3</div><div class="cal-evs"><div class="cal-ev"><span class="cdot" style="background:var(--ps)"></span>PS Spring Sale</div></div></div>
+        <div class="cal-row"><div class="cal-mo now">4</div><div class="cal-evs"><div class="cal-ev now-ev"><span class="cdot" style="background:var(--xbox)"></span>◀ Xbox スプリング</div><div class="cal-ev now-ev"><span class="cdot" style="background:var(--eshop)"></span>◀ カプコン SPRING</div></div></div>
+        <div class="cal-row"><div class="cal-mo now">5</div><div class="cal-evs"><div class="cal-ev now-ev"><span class="cdot" style="background:var(--eshop)"></span>◀ eショップ GW</div><div class="cal-ev now-ev"><span class="cdot" style="background:var(--ps)"></span>◀ PS GWセール</div><div class="cal-ev now-ev"><span class="cdot" style="background:var(--steam)"></span>◀ スクエニ GW</div></div></div>
+        <div class="cal-row"><div class="cal-mo">6</div><div class="cal-evs"><div class="cal-ev"><span class="cdot" style="background:var(--ps)"></span>PS Days of Play 🎉</div></div></div>
+        <div class="cal-row"><div class="cal-mo">9</div><div class="cal-evs"><div class="cal-ev"><span class="cdot" style="background:var(--ps)"></span>TGS連動セール</div></div></div>
+        <div class="cal-row"><div class="cal-mo">11</div><div class="cal-evs"><div class="cal-ev"><span class="cdot" style="background:#666"></span>BF 全機種 🎉最大級</div></div></div>
+        <div class="cal-row"><div class="cal-mo">12</div><div class="cal-evs"><div class="cal-ev"><span class="cdot" style="background:var(--ps)"></span>PS BIG WINTER ①</div><div class="cal-ev"><span class="cdot" style="background:var(--xbox)"></span>Xbox ホリデー</div></div></div>
+      </div>
+    </div>
+
+    <!-- 収益化のヒント（開発者メモとして） -->
+    <div class="widget">
+      <div class="whead">💰 収益化ポイント</div>
+      <div class="wbody">
+        <div style="font-size:10px;color:var(--text3);line-height:1.8">
+          <div>① <strong style="color:var(--accent4)">AdSense</strong> — PV増加で収益↑</div>
+          <div>② <strong style="color:var(--amazon)">プリペイドカード</strong> — セール利用者に最適</div>
+          <div>③ <strong style="color:var(--accent3)">Amazon/楽天アフィリ</strong> — パッケージ派向け</div>
+          <div>④ <strong style="color:var(--accent2)">純広告</strong> — 月10万PV〜</div>
+        </div>
+        <div class="tip-box" style="margin-top:6px">💡 <strong>プリペイドカード誘導</strong>がこのサイトの強み。セール中にeショップカードを購入→チャージ→セール購入という流れをサポート。アフィリエイト収益につながりやすい。</div>
+      </div>
+    </div>
+
+    <!-- 広告2 -->
+    <div class="ad-side" style="min-height:200px">
+      <div class="atag">広告</div>
+      <div style="font-size:26px">📢</div>
+      <div>Google AdSense</div>
+      <div style="font-size:9px">300×600px</div>
+    </div>
+
+  </aside>
+</div>
+
+<footer>
+  ⚠️ 掲載価格はモックデータです。購入前に各ストアで確認してください。<br>
+  データ提供予定：Deku Deals API / Steam Web API / PS非公式API / Xbox API / Amazon PA-API / 楽天アフィリエイトAPI<br>
+  フリマ相場はユーザー投稿制（参考値）　|　当サイトはアフィリエイトプログラムを利用しています<br>
+  © 2026 ゲーセル　|　プライバシーポリシー　|　お問い合わせ
+</footer>
+
+<script>
+// ===== JSONデータ読み込み =====
+let priceData = null;
+
+async function loadPriceData() {
+  try {
+    const resp = await fetch('./data/prices.json');
+    if (!resp.ok) throw new Error('データ取得失敗');
+    priceData = await resp.json();
+    renderGames();
+    updateLastUpdated();
+  } catch(e) {
+    console.warn('JSONデータ読み込み失敗、モックデータを使用:', e);
+    // フォールバック: モックデータで表示継続
+    priceData = null;
+  }
+}
+
+function updateLastUpdated() {
+  if (!priceData) return;
+  const el = document.getElementById('cardCount');
+  if (el) {
+    const count = Object.keys(priceData.games || {}).length;
+    el.textContent = count + 'タイトル';
+  }
+  // 最終更新日をヘッダーに表示
+  const updated = priceData.last_updated;
+  if (updated) {
+    const tag = document.querySelector('.live-badge');
+    if (tag) tag.title = '最終更新: ' + updated;
+  }
+}
+
+function getBestPrice(prices) {
+  let best = null;
+  for (const [platform, data] of Object.entries(prices || {})) {
+    if (data.on_sale) {
+      if (!best || data.sale_price < best.price) {
+        best = { price: data.sale_price, platform, discount: data.discount_pct };
+      }
+    }
+  }
+  return best;
+}
+
+function isAllTimeLow(prices) {
+  for (const data of Object.values(prices || {})) {
+    if (data.on_sale && data.sale_price === data.all_time_low) return true;
+  }
+  return false;
+}
+
+function daysUntil(dateStr) {
+  if (!dateStr) return null;
+  const diff = new Date(dateStr) - new Date();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+}
+
+function platformEmoji(platform) {
+  const map = { eshop: '🎮', steam: '🖥️', ps: '🎯', xbox: '🟩' };
+  return map[platform] || '❓';
+}
+
+function renderGames() {
+  if (!priceData) return;
+  const list = document.getElementById('gameList');
+  if (!list) return;
+
+  // 既存カードはそのままにして更新情報だけ反映
+  // （モックHTMLを活かしつつJSONデータで補完）
+  const games = priceData.games || {};
+  let onSaleCount = 0;
+
+  for (const [gameId, game] of Object.entries(games)) {
+    const prices = game.prices || {};
+    const best = getBestPrice(prices);
+    if (best) onSaleCount++;
+
+    // 既存カードのIDと一致するものを探して更新
+    // カードのdata属性でgame_idを付与している場合
+    const card = document.querySelector(`[data-game-id="${gameId}"]`);
+    if (card) {
+      // 価格を動的に更新
+      const priceEl = card.querySelector('.bprice');
+      const discEl = card.querySelector('.dtag');
+      if (priceEl && best) {
+        priceEl.textContent = '¥' + best.price.toLocaleString();
+      }
+      if (discEl && best) {
+        discEl.textContent = '-' + best.discount + '%';
+      }
+    }
+  }
+
+  // セール件数更新
+  const countEl = document.getElementById('cardCount');
+  if (countEl) countEl.textContent = onSaleCount + 'タイトル セール中';
+}
+
+// ===== テーマ =====
+const savedTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', savedTheme);
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.querySelector('.theme-btn').textContent = next === 'dark' ? '🌙' : '☀️';
+}
+if (savedTheme === 'light') document.querySelector('.theme-btn').textContent = '☀️';
+
+// ===== パネル開閉 =====
+function togglePanel(el) {
+  const card = el.closest('.gcard');
+  const panel = card.querySelector('.panel');
+  panel.classList.toggle('open');
+  const btn = el.querySelector('.exbtn');
+  if (btn) btn.textContent = panel.classList.contains('open') ? '閉じる ▲' : '詳細 ▼';
+  if (panel.classList.contains('open')) initChartsInCard(card);
+}
+
+// ===== パネル内タブ =====
+function switchTab(btn, targetId) {
+  const pin = btn.closest('.pin');
+  pin.querySelectorAll('.pt2').forEach(b => b.classList.remove('on'));
+  pin.querySelectorAll('.tab-content').forEach(c => c.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById(targetId).classList.add('on');
+}
+
+// ===== メインタブ =====
+function setMainTab(el, plat) {
+  document.querySelectorAll('.ptabs .ptab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  const cards = document.querySelectorAll('.gcard');
+  cards.forEach(card => {
+    if (plat === 'all' || plat === 'wishlist-tab') {
+      card.style.display = '';
+    } else {
+      const platAttr = card.getAttribute('data-plat') || '';
+      card.style.display = platAttr.includes(plat) ? '' : 'none';
+    }
+  });
+  updateCount();
+}
+
+// ===== フィルター =====
+function filterCards() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  document.querySelectorAll('.gcard').forEach(card => {
+    const title = card.querySelector('.gtitle').textContent.toLowerCase();
+    const meta = card.querySelector('.cmeta').textContent.toLowerCase();
+    card.style.display = (!q || title.includes(q) || meta.includes(q)) ? '' : 'none';
+  });
+  updateCount();
+}
+
+function updateCount() {
+  const visible = document.querySelectorAll('.gcard:not([style*="display: none"])').length;
+  document.getElementById('cardCount').textContent = visible + 'タイトル';
+}
+
+// ===== ソート =====
+function sortCards(val) {
+  const list = document.getElementById('gameList');
+  const cards = [...list.querySelectorAll('.gcard')];
+  cards.sort((a, b) => {
+    if (val === 'disc') return Number(b.dataset.disc) - Number(a.dataset.disc);
+    if (val === 'price') return Number(a.dataset.price) - Number(b.dataset.price);
+    if (val === 'dead') return Number(a.dataset.dead) - Number(b.dataset.dead);
+    return 0;
+  });
+  const adInline = list.querySelector('.ad-inline');
+  cards.forEach((c, i) => {
+    list.appendChild(c);
+    if (i === 1 && adInline) list.appendChild(adInline);
+  });
+}
+
+// ===== ウィッシュリスト =====
+let wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+function renderWishlist() {
+  const body = document.getElementById('wishlistBody');
+  document.getElementById('wlCount').textContent = wishlist.length;
+  if (!wishlist.length) {
+    body.innerHTML = '<div class="wl-empty">♡ を押してお気に入り登録！<br>価格通知も設定できます</div>';
+    return;
+  }
+  body.innerHTML = wishlist.map((item, i) => `
+    <div class="wl-item">
+      <div class="wl-title">${item.title}</div>
+      <div class="wl-price">${item.price}</div>
+      <button class="wl-rm" onclick="removeWish(${i})">✕</button>
+    </div>
+  `).join('');
+}
+function toggleWish(e, btn, title, price) {
+  e.stopPropagation();
+  const idx = wishlist.findIndex(w => w.title === title);
+  if (idx >= 0) {
+    wishlist.splice(idx, 1);
+    btn.classList.remove('on');
+  } else {
+    wishlist.push({ title, price });
+    btn.classList.add('on');
+    btn.style.transform = 'scale(1.4)';
+    setTimeout(() => btn.style.transform = '', 300);
+  }
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  renderWishlist();
+}
+function removeWish(idx) {
+  wishlist.splice(idx, 1);
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  renderWishlist();
+}
+renderWishlist();
+
+// ===== 通知モーダル =====
+function openModal() { document.getElementById('notifModal').classList.add('open'); }
+function closeModal() { document.getElementById('notifModal').classList.remove('open'); }
+function registerNotif() {
+  const email = document.getElementById('notifEmail').value;
+  if (!email) { alert('メールアドレスを入力してください'); return; }
+  alert('✅ 登録しました！
+' + email + ' に通知をお送りします');
+  closeModal();
+}
+document.getElementById('notifModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ===== フリマ投稿 =====
+function submitFrima(btn) {
+  const row = btn.closest('.ff-row');
+  const site = row.querySelector('.ff-sel').value;
+  const price = row.querySelector('input').value;
+  if (!price) { alert('価格を入力してください'); return; }
+  const list = btn.closest('.frima-form').querySelector('.frima-list');
+  if (list) {
+    const now = new Date().toLocaleDateString('ja-JP');
+    const newRow = document.createElement('div');
+    newRow.className = 'fl-row';
+    newRow.innerHTML = `<span class="fl-site">${site}</span><span class="fl-price">¥${Number(price).toLocaleString()}</span><span class="fl-date">${now} 投稿</span>`;
+    list.insertBefore(newRow, list.firstChild);
+    row.querySelector('input').value = '';
+  }
+}
+
+// ===== グラフ =====
+const chartData = {
+  chart1: { labels:['24/1','24/4','24/7','24/10','25/1','25/4','25/7','25/10','26/1','26/4'], data:[8789,8789,5273,8789,3515,8789,4394,8789,8789,2637] },
+  chart2: { labels:['24/1','24/4','24/7','24/10','25/1','25/4','25/7','25/10','26/1','26/4'], data:[9878,9878,4939,9878,3951,9878,4939,3951,9878,2469] },
+  chart3: { labels:['23/1','23/6','24/1','24/6','25/1','25/6','26/1','26/4'], data:[5990,2995,5990,2995,5990,1797,5990,1500] },
+  chart4: { labels:['23/1','23/6','24/1','24/6','25/1','25/6','26/1','26/4'], data:[5478,1372,5478,1372,5478,1372,5478,1320] },
+  chart5: { labels:['22/9','23/3','23/9','24/3','24/9','25/3','25/9','26/4'], data:[8778,8778,8778,5267,8778,5267,8778,4389] },
+};
+const initializedCharts = new Set();
+
+function initChartsInCard(card) {
+  card.querySelectorAll('canvas').forEach(canvas => {
+    if (initializedCharts.has(canvas.id)) return;
+    const d = chartData[canvas.id];
+    if (!d) return;
+    initializedCharts.add(canvas.id);
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: d.labels,
+        datasets: [{
+          data: d.data,
+          borderColor: '#ffc107',
+          backgroundColor: 'rgba(255,193,7,.08)',
+          pointBackgroundColor: d.data.map(v => v === Math.min(...d.data) ? '#00e676' : '#ffc107'),
+          pointRadius: d.data.map(v => v === Math.min(...d.data) ? 6 : 3),
+          tension: 0.3,
+          fill: true,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: ctx => '¥' + ctx.raw.toLocaleString() } }
+        },
+        scales: {
+          x: { ticks: { color: '#4a5878', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,.04)' } },
+          y: { ticks: { color: '#4a5878', font: { size: 9 }, callback: v => '¥' + v.toLocaleString() }, grid: { color: 'rgba(255,255,255,.04)' } }
+        }
+      }
+    });
+  });
+}
+
+// ===== 起動時にJSONデータ読み込み =====
+window.addEventListener('DOMContentLoaded', () => {
+  loadPriceData();
+});
+</script>
+</body>
+</html>

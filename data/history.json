@@ -40,5 +40,19 @@
         "discount_pct": 50
       }
     ]
+  },
+  "persona5_royal_eshop": {
+    "game_id": "persona5_royal",
+    "platform": "eshop",
+    "all_time_low": 1535,
+    "all_time_low_date": "2026-04-28",
+    "records": [
+      {
+        "date": "2026-04-28",
+        "sale_price": 1535,
+        "regular_price": 7678,
+        "discount_pct": 80
+      }
+    ]
   }
 }

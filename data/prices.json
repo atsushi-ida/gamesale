@@ -1,13 +1,24 @@
 {
   "last_updated": "2026-04-28",
-  "eshop_sales": [],
-  "steam_games": {
+  "games": {
     "persona5_royal": {
       "id": "persona5_royal",
       "title": "ペルソナ5 ザ・ロイヤル",
       "maker": "アトラス",
-      "steam_id": "1687950",
+      "is_switch2": false,
       "prices": {
+        "eshop": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 7678,
+          "sale_price": 1535,
+          "discount_pct": 80,
+          "sale_end": "2026-05-18",
+          "currency": "JPY",
+          "fetched_at": "2026-04-28",
+          "all_time_low": 1535,
+          "all_time_low_date": "2026-04-28"
+        },
         "steam": {
           "status": "on_sale",
           "on_sale": true,
@@ -15,16 +26,27 @@
           "sale_price": 1535,
           "discount_pct": 80,
           "currency": "JPY",
-          "fetched_at": "2026-04-28"
+          "fetched_at": "2026-04-28",
+          "all_time_low": 1535,
+          "all_time_low_date": "2026-04-28"
         }
       }
     },
     "mhrise_sunbreak": {
       "id": "mhrise_sunbreak",
-      "title": "モンスターハンターライズ：サンブレイク",
+      "title": "モンスターハンターライズ：サンブレイク セット",
       "maker": "カプコン",
-      "steam_id": "1446780",
+      "is_switch2": false,
       "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 5990,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-28"
+        },
         "steam": {
           "status": "not_on_sale",
           "on_sale": false,
@@ -38,10 +60,19 @@
     },
     "dq11s": {
       "id": "dq11s",
-      "title": "ドラゴンクエストXI S",
+      "title": "ドラゴンクエストXI S 過ぎ去りし時を求めて S",
       "maker": "スクウェア・エニックス",
-      "steam_id": "860510",
+      "is_switch2": false,
       "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 5478,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-28"
+        },
         "steam": {
           "status": "on_sale",
           "on_sale": true,
@@ -49,20 +80,22 @@
           "sale_price": 594,
           "discount_pct": 85,
           "currency": "JPY",
-          "fetched_at": "2026-04-28"
+          "fetched_at": "2026-04-28",
+          "all_time_low": 594,
+          "all_time_low_date": "2026-04-28"
         }
       }
     },
-    "biohazard_re4": {
-      "id": "biohazard_re4",
-      "title": "バイオハザード RE:4",
-      "maker": "カプコン",
-      "steam_id": "2050650",
+    "xenoblade3": {
+      "id": "xenoblade3",
+      "title": "ゼノブレイド3",
+      "maker": "任天堂",
+      "is_switch2": false,
       "prices": {
-        "steam": {
+        "eshop": {
           "status": "not_on_sale",
           "on_sale": false,
-          "regular_price": 4990,
+          "regular_price": 8700,
           "sale_price": null,
           "discount_pct": 0,
           "currency": "JPY",
@@ -74,7 +107,7 @@
       "id": "biohazard_village",
       "title": "バイオハザード ヴィレッジ",
       "maker": "カプコン",
-      "steam_id": "1196590",
+      "is_switch2": false,
       "prices": {
         "steam": {
           "status": "not_on_sale",
@@ -87,11 +120,18 @@
         }
       }
     },
+    "octopath2": {
+      "id": "octopath2",
+      "title": "オクトパストラベラー2",
+      "maker": "スクウェア・エニックス",
+      "is_switch2": false,
+      "prices": {}
+    },
     "guilty_gear_strive": {
       "id": "guilty_gear_strive",
       "title": "GUILTY GEAR -STRIVE-",
       "maker": "アークシステムワークス",
-      "steam_id": "1384160",
+      "is_switch2": false,
       "prices": {
         "steam": {
           "status": "not_on_sale",
@@ -108,7 +148,7 @@
       "id": "lies_of_p",
       "title": "Lies of P",
       "maker": "NEOWIZ",
-      "steam_id": "1627720",
+      "is_switch2": false,
       "prices": {
         "steam": {
           "status": "on_sale",
@@ -117,7 +157,9 @@
           "sale_price": 4180,
           "discount_pct": 50,
           "currency": "JPY",
-          "fetched_at": "2026-04-28"
+          "fetched_at": "2026-04-28",
+          "all_time_low": 4180,
+          "all_time_low_date": "2026-04-28"
         }
       }
     },
@@ -125,7 +167,7 @@
       "id": "sekiro",
       "title": "SEKIRO: SHADOWS DIE TWICE",
       "maker": "フロムソフトウェア",
-      "steam_id": "814380",
+      "is_switch2": false,
       "prices": {
         "steam": {
           "status": "not_on_sale",
@@ -142,7 +184,7 @@
       "id": "elden_ring",
       "title": "ELDEN RING",
       "maker": "フロムソフトウェア",
-      "steam_id": "1245620",
+      "is_switch2": false,
       "prices": {
         "steam": {
           "status": "not_on_sale",
@@ -155,6 +197,5 @@
         }
       }
     }
-  },
-  "eshop_sale_count": 0
+  }
 }

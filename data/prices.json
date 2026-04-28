@@ -1,42 +1,13 @@
 {
   "last_updated": "2026-04-28",
-  "eshop_all_sales": {
-    "count": 0,
-    "updated": "2026-04-28"
-  },
-  "games": {
-    "biohazard_re4": {
-      "title": "バイオハザード RE:4 ゴールドエディション",
-      "maker": "カプコン",
-      "prices": {
-        "eshop": {
-          "status": "not_found",
-          "on_sale": false
-        },
-        "steam": {
-          "status": "not_on_sale",
-          "on_sale": false,
-          "regular_price": 4990,
-          "sale_price": null,
-          "discount_pct": 0,
-          "currency": "JPY",
-          "fetched_at": "2026-04-28"
-        }
-      }
-    },
+  "eshop_sales": [],
+  "steam_games": {
     "persona5_royal": {
+      "id": "persona5_royal",
       "title": "ペルソナ5 ザ・ロイヤル",
       "maker": "アトラス",
+      "steam_id": "1687950",
       "prices": {
-        "eshop": {
-          "status": "not_on_sale",
-          "on_sale": false,
-          "regular_price": 838,
-          "sale_price": null,
-          "discount_pct": 0,
-          "currency": "JPY",
-          "fetched_at": "2026-04-28"
-        },
         "steam": {
           "status": "on_sale",
           "on_sale": true,
@@ -44,20 +15,16 @@
           "sale_price": 1535,
           "discount_pct": 80,
           "currency": "JPY",
-          "fetched_at": "2026-04-28",
-          "all_time_low": 1535,
-          "all_time_low_date": "2026-04-28"
+          "fetched_at": "2026-04-28"
         }
       }
     },
     "mhrise_sunbreak": {
+      "id": "mhrise_sunbreak",
       "title": "モンスターハンターライズ：サンブレイク",
       "maker": "カプコン",
+      "steam_id": "1446780",
       "prices": {
-        "eshop": {
-          "status": "not_found",
-          "on_sale": false
-        },
         "steam": {
           "status": "not_on_sale",
           "on_sale": false,
@@ -70,13 +37,11 @@
       }
     },
     "dq11s": {
-      "title": "ドラゴンクエストXI S 過ぎ去りし時を求めて S",
+      "id": "dq11s",
+      "title": "ドラゴンクエストXI S",
       "maker": "スクウェア・エニックス",
+      "steam_id": "860510",
       "prices": {
-        "eshop": {
-          "status": "not_found",
-          "on_sale": false
-        },
         "steam": {
           "status": "on_sale",
           "on_sale": true,
@@ -84,21 +49,61 @@
           "sale_price": 594,
           "discount_pct": 85,
           "currency": "JPY",
-          "fetched_at": "2026-04-28",
-          "all_time_low": 594,
-          "all_time_low_date": "2026-04-28"
+          "fetched_at": "2026-04-28"
         }
       }
     },
-    "xenoblade3": {
-      "title": "ゼノブレイド3",
-      "maker": "任天堂",
+    "biohazard_re4": {
+      "id": "biohazard_re4",
+      "title": "バイオハザード RE:4",
+      "maker": "カプコン",
+      "steam_id": "2050650",
       "prices": {
-        "eshop": {
-          "status": "not_found",
-          "on_sale": false
+        "steam": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 4990,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-28"
+        }
+      }
+    },
+    "biohazard_village": {
+      "id": "biohazard_village",
+      "title": "バイオハザード ヴィレッジ",
+      "maker": "カプコン",
+      "steam_id": "1196590",
+      "prices": {
+        "steam": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 3990,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-28"
+        }
+      }
+    },
+    "guilty_gear_strive": {
+      "id": "guilty_gear_strive",
+      "title": "GUILTY GEAR -STRIVE-",
+      "maker": "アークシステムワークス",
+      "steam_id": "1384160",
+      "prices": {
+        "steam": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 3990,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-28"
         }
       }
     }
-  }
+  },
+  "eshop_sale_count": 0
 }

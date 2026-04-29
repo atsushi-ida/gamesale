@@ -46,7 +46,7 @@ GAMES = [
     {"id": "elden_ring", "title": "ELDEN RING", "maker": "フロムソフトウェア", "nsuid": None, "steam_id": "1245620", "is_switch2": False},
     # Switch2専用タイトル
     {"id": "mariokart_world", "title": "マリオカート ワールド", "maker": "任天堂", "nsuid": "70010000092842", "steam_id": None, "is_switch2": True},
-    {"id": "donkey_kong_bananza", "title": "ドンキーコング バナンザ", "maker": "任天堂", "nsuid": "70010000096306", "steam_id": None, "is_switch2": True},
+    {"id": "donkey_kong_bananza", "title": "ドンキーコング バナナーラ", "maker": "任天堂", "nsuid": "70010000096306", "steam_id": None, "is_switch2": True},
     {"id": "poco_a_pokemon", "title": "ぽこ あ ポケモン", "maker": "任天堂", "nsuid": "70010000107420", "steam_id": None, "is_switch2": True},
     {"id": "deltarune", "title": "DELTARUNE", "maker": "tobyfox", "nsuid": "70010000096639", "steam_id": None, "is_switch2": True},
 ]

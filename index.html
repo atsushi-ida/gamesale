@@ -544,17 +544,29 @@ function thumbIcon(gameId) {
 
 // ===== ダウンロード容量データ =====
 const FILE_SIZES = {
-  persona5_royal:    { gb: 8.0,  label: '8.0 GB' },
-  mhrise_sunbreak:   { gb: 22.6, label: '22.6 GB' },
-  dq11s:             { gb: 16.0, label: '16.0 GB' },
-  xenoblade3:        { gb: 13.7, label: '13.7 GB' },
-  biohazard_re4:     { gb: 8.5,  label: '8.5 GB' },
-  biohazard_village: { gb: 35.7, label: '35.7 GB' },
-  octopath2:         { gb: 8.6,  label: '8.6 GB' },
-  guilty_gear_strive:{ gb: 14.2, label: '14.2 GB' },
-  lies_of_p:         { gb: 21.3, label: '21.3 GB' },
-  sekiro:            { gb: 14.0, label: '14.0 GB' },
-  elden_ring:        { gb: 53.0, label: '53.0 GB' },
+  persona5_royal:      { gb: 8.0,  label: '8.0 GB' },
+  mhrise_sunbreak:     { gb: 22.6, label: '22.6 GB' },
+  dq11s:               { gb: 16.0, label: '16.0 GB' },
+  xenoblade3:          { gb: 13.7, label: '13.7 GB' },
+  biohazard_re4:       { gb: 8.5,  label: '8.5 GB' },
+  biohazard_village:   { gb: 35.7, label: '35.7 GB' },
+  octopath2:           { gb: 8.6,  label: '8.6 GB' },
+  guilty_gear_strive:  { gb: 14.2, label: '14.2 GB' },
+  lies_of_p:           { gb: 21.3, label: '21.3 GB' },
+  sekiro:              { gb: 14.0, label: '14.0 GB' },
+  elden_ring:          { gb: 53.0, label: '53.0 GB' },
+  mariokart_world:       { gb: 7.1,  label: '7.1 GB' },
+  donkey_kong_bananza:   { gb: 8.0,  label: '8.0 GB' },
+  poco_a_pokemon:        { gb: 3.2,  label: '3.2 GB' },
+  deltarune:             { gb: 3.8,  label: '3.8 GB' },
+  split_fiction:         { gb: 35.0, label: '35.0 GB' },
+  sw2_himitsu:           { gb: 0.5,  label: '0.5 GB' },
+  mario_party_jamboree:  { gb: 5.6,  label: '5.6 GB' },
+  duskbloods:            { gb: null, label: '未定' },
+  splatoon_raiders:      { gb: null, label: '未定' },
+  fantasy_life_i_sw2:    { gb: 3.5,  label: '3.5 GB' },
+  pokemon_za_sw2:        { gb: 8.0,  label: '8.0 GB' },
+  kirby_air_riders:      { gb: 4.0,  label: '4.0 GB' },
 };
 
 // ===== カレンダー =====
@@ -655,8 +667,8 @@ const PERI_DEFAULTS = [
   { id:'sw2_pro',   name:'Switch2 プロコントローラー', cat:'🟠 Nintendo Switch2', price:9980,  msrp:9980,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18210484%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
   { id:'sw2_body',  name:'Nintendo Switch2 本体',      cat:'🟠 Nintendo Switch2', price:49980, msrp:49980, url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18210481%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
   { id:'sw_pro',    name:'Switch プロコントローラー',   cat:'🎮 Nintendo Switch',  price:7678,  msrp:7678,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F14647228%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
-  { id:'ds_white',  name:'DualSense コントローラー 白', cat:'🎯 PlayStation 5',    price:9480,  msrp:9480,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18440638%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
-  { id:'ds_black',  name:'DualSense コントローラー 黒', cat:'🎯 PlayStation 5',    price:9480,  msrp:9480,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18440639%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
+  { id:'ds_white',  name:'DualSense コントローラー 白', cat:'🎯 PlayStation 5',    price:11016, msrp:11480, url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18440638%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
+  { id:'ds_black',  name:'DualSense コントローラー 黒', cat:'🎯 PlayStation 5',    price:11121, msrp:11480, url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18440639%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
   { id:'samsung512',name:'Samsung microSDXpress 512GB', cat:'🟠 Switch2対応SD',    price:19980, msrp:19980, url:'https://hb.afl.rakuten.co.jp/ichiba/5348961a.e0ed1359.5348961b.3946baab/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fitgm%2F4560441099989%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
   { id:'sandisk256',name:'SanDisk microSDExpress 256GB',cat:'🟠 Switch2対応SD',    price:6560,  msrp:8980,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18210486%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
 ];
@@ -730,8 +742,10 @@ function createCard(gameId, game, index) {
 
   // GEO中古価格
   const geoMatch = geoData?.matched_games?.[gameId];
+  const geoSaleEnd = geoData?.sale_end;
+  const geoCampaign = geoData?.campaign_name ? geoData.campaign_name.replace(/『|』|！|!|　/g, '').trim() : 'GEOセール';
   const geoBadge = geoMatch
-    ? `<div style="margin-top:4px"><span class="geo-badge">📦 中古(GEO) ¥${Number(geoMatch.price).toLocaleString()}</span></div>`
+    ? `<div style="margin-top:4px"><span class="geo-badge">📦 中古(GEO) ¥${Number(geoMatch.price).toLocaleString()} <span style="font-size:8px;opacity:.8">${geoCampaign}${geoSaleEnd ? ' 〜'+geoSaleEnd : ''}</span></span></div>`
     : '';
 
   // 価格表示

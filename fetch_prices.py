@@ -16,15 +16,15 @@ HISTORY_FILE = DATA_DIR / "history.json"
 PERIPHERALS_FILE = DATA_DIR / "peripherals.json"
 REQUEST_INTERVAL = 1.5
 
-# 周辺機器リスト（楽天商品ページのshop/item）
+# 周辺機器リスト（直接URLを指定）
 PERIPHERALS = [
-    {"id": "sw2_pro",    "name": "Switch2 プロコントローラー", "shop": "book",  "item": "18210484"},
-    {"id": "sw2_body",   "name": "Nintendo Switch2 本体",      "shop": "book",  "item": "18210481"},
-    {"id": "sw_pro",     "name": "Switch プロコントローラー",   "shop": "book",  "item": "14647228"},
-    {"id": "ds_white",   "name": "DualSense コントローラー 白", "shop": "book",  "item": "18440638"},
-    {"id": "ds_black",   "name": "DualSense コントローラー 黒", "shop": "book",  "item": "18440639"},
-    {"id": "samsung512", "name": "Samsung microSDXpress 512GB", "shop": "itgm",  "item": "4560441099989"},
-    {"id": "sandisk256", "name": "SanDisk microSDExpress 256GB","shop": "book",  "item": "18210486"},
+    {"id": "sw2_pro",    "name": "Switch2 プロコントローラー", "url": "https://item.rakuten.co.jp/book/18210484/"},
+    {"id": "sw2_body",   "name": "Nintendo Switch2 本体",      "url": "https://item.rakuten.co.jp/book/18210481/"},
+    {"id": "sw_pro",     "name": "Switch プロコントローラー",   "url": "https://item.rakuten.co.jp/book/14647228/"},
+    {"id": "ds_white",   "name": "DualSense コントローラー 白", "url": "https://books.rakuten.co.jp/rb/18440638/"},
+    {"id": "ds_black",   "name": "DualSense コントローラー 黒", "url": "https://books.rakuten.co.jp/rb/18440639/"},
+    {"id": "samsung512", "name": "Samsung microSDXpress 512GB", "url": "https://item.rakuten.co.jp/itgm/4560441099989/"},
+    {"id": "sandisk256", "name": "SanDisk microSDExpress 256GB","url": "https://books.rakuten.co.jp/rb/18210486/"},
 ]
 
 HEADERS = {
@@ -89,48 +89,77 @@ def update_history(history, game_id, platform, price_data):
         entry["records"] = sorted(entry["records"], key=lambda x: x["date"])[-365:]
     return history
 
-def fetch_rakuten_price(shop, item):
-    """楽天商品ページから価格をスクレイピング"""
-    url = f"https://item.rakuten.co.jp/{shop}/{item}/"
+import re as _re
+
+def fetch_rakuten_price(url):
+    """楽天商品ページから価格をスクレイピング（item.rakuten / books.rakuten 両対応）"""
     try:
         resp = requests.get(url, headers=HEADERS, timeout=15)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
-        # 楽天の価格要素を複数パターンで探す
-        selectors = [
-            "span.price--OKm9j",
-            "[class*='price__'] span",
-            ".price-checkout",
-            "span[class*='price']",
-            ".item-price",
-            "#priceCalculationConfig",  # JSON埋め込みの場合
-        ]
-        for sel in selectors:
-            el = soup.select_one(sel)
-            if el:
-                text = el.get_text(strip=True).replace(",", "").replace("円", "").replace("¥", "").replace("税込", "").strip()
-                # 数値のみ抽出
-                import re
-                m = re.search(r"(\d{3,6})", text)
-                if m:
-                    price = int(m.group(1))
-                    if 1000 <= price <= 200000:
-                        return price
-        # JSON-LDから価格を取得
-        import re
-        scripts = soup.find_all("script", type="application/ld+json")
-        for s in scripts:
+
+        # 1) JSON-LD から取得（最も信頼性が高い）
+        for s in soup.find_all("script", type="application/ld+json"):
             try:
-                d = json.loads(s.string)
-                if isinstance(d, dict) and "offers" in d:
-                    p = d["offers"].get("price") or d["offers"].get("lowPrice")
-                    if p:
-                        return int(float(p))
+                d = json.loads(s.string or "")
+                offers = d.get("offers", {})
+                # offers がリストの場合もある
+                if isinstance(offers, list):
+                    offers = offers[0]
+                p = offers.get("price") or offers.get("lowPrice")
+                if p:
+                    price = int(float(str(p).replace(",", "")))
+                    if 1000 <= price <= 300000:
+                        return price
             except Exception:
                 pass
+
+        # 2) books.rakuten.co.jp 専用セレクタ
+        for sel in [
+            ".rkb-price__main-price",
+            ".rkb-price__selling-price",
+            "span.selling-price",
+            "[class*='selling']",
+            ".bk-price",
+        ]:
+            el = soup.select_one(sel)
+            if el:
+                text = el.get_text(strip=True)
+                m = _re.search(r"[\d,]{4,}", text)
+                if m:
+                    price = int(m.group(0).replace(",", ""))
+                    if 1000 <= price <= 300000:
+                        return price
+
+        # 3) item.rakuten.co.jp 専用セレクタ
+        for sel in [
+            "span.price--OKm9j",
+            ".price--OKm9j",
+            "[class*='price__main']",
+            "[class*='ItemPrice']",
+            ".item-price",
+        ]:
+            el = soup.select_one(sel)
+            if el:
+                text = el.get_text(strip=True)
+                m = _re.search(r"[\d,]{4,}", text)
+                if m:
+                    price = int(m.group(0).replace(",", ""))
+                    if 1000 <= price <= 300000:
+                        return price
+
+        # 4) 全体から価格パターンを探す（フォールバック）
+        for el in soup.find_all(["span", "div", "p"], class_=_re.compile(r"price|Price|yen|Yen", _re.I)):
+            text = el.get_text(strip=True)
+            m = _re.search(r"[\d,]{4,}", text)
+            if m:
+                price = int(m.group(0).replace(",", ""))
+                if 1000 <= price <= 300000:
+                    return price
+
         return None
     except Exception as e:
-        print(f"    ⚠ 楽天スクレイプエラー ({shop}/{item}): {e}")
+        print(f"    ⚠ 楽天スクレイプエラー ({url}): {e}")
         return None
 
 def fetch_and_save_peripherals(existing_peripherals):
@@ -140,11 +169,10 @@ def fetch_and_save_peripherals(existing_peripherals):
     items_out = []
     for p in PERIPHERALS:
         print(f"  🔍 {p['name']}...", end=" ", flush=True)
-        price = fetch_rakuten_price(p["shop"], p["item"])
+        price = fetch_rakuten_price(p["url"])
         if price:
             print(f"¥{price:,}")
         else:
-            # 前回の価格を引き継ぐ
             price = prev_items.get(p["id"], {}).get("price")
             print(f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗")
         items_out.append({"id": p["id"], "price": price})

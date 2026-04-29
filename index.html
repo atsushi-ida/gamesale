@@ -678,7 +678,7 @@ function renderPeripherals(items, updated) {
         <div class="hm">${p.cat}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
-        ${isDiscount ? `<div style="font-size:9px;color:var(--text3);text-decoration:line-through">¥${Number(msrp).toLocaleString()}</div>` : ''}
+        ${msrp ? `<div style="font-size:9px;color:var(--text3)${isDiscount ? ';text-decoration:line-through' : ''}">定価 ¥${Number(msrp).toLocaleString()}</div>` : ''}
         <div class="peri-price">${price ? '¥'+Number(price).toLocaleString() : '-'}</div>
         ${isDiscount ? `<div style="font-size:9px;color:var(--accent)">-${discPct}%</div>` : ''}
       </div>

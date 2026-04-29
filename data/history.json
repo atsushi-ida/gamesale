@@ -17,7 +17,8 @@
         "regular_price": 7678,
         "discount_pct": 80
       }
-    ]
+    ],
+    "current_sale_start": "2026-04-29"
   },
   "dq11s_steam": {
     "game_id": "dq11s",
@@ -37,7 +38,8 @@
         "regular_price": 3960,
         "discount_pct": 85
       }
-    ]
+    ],
+    "current_sale_start": "2026-04-29"
   },
   "lies_of_p_steam": {
     "game_id": "lies_of_p",
@@ -57,7 +59,8 @@
         "regular_price": 8360,
         "discount_pct": 50
       }
-    ]
+    ],
+    "current_sale_start": "2026-04-29"
   },
   "persona5_royal_eshop": {
     "game_id": "persona5_royal",
@@ -77,7 +80,8 @@
         "regular_price": 7678,
         "discount_pct": 80
       }
-    ]
+    ],
+    "current_sale_start": "2026-04-29"
   },
   "octopath2_eshop": {
     "game_id": "octopath2",
@@ -91,6 +95,7 @@
         "regular_price": 7800,
         "discount_pct": 60
       }
-    ]
+    ],
+    "current_sale_start": "2026-04-29"
   }
 }

@@ -19,7 +19,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-29",
           "all_time_low": 1535,
-          "all_time_low_date": "2026-04-28"
+          "all_time_low_date": "2026-04-28",
+          "sale_start": "2026-04-29"
         },
         "steam": {
           "status": "on_sale",
@@ -30,7 +31,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-29",
           "all_time_low": 1535,
-          "all_time_low_date": "2026-04-28"
+          "all_time_low_date": "2026-04-28",
+          "sale_start": "2026-04-29"
         }
       }
     },
@@ -88,7 +90,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-29",
           "all_time_low": 594,
-          "all_time_low_date": "2026-04-28"
+          "all_time_low_date": "2026-04-28",
+          "sale_start": "2026-04-29"
         }
       }
     },
@@ -148,7 +151,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-29",
           "all_time_low": 3120,
-          "all_time_low_date": "2026-04-29"
+          "all_time_low_date": "2026-04-29",
+          "sale_start": "2026-04-29"
         }
       }
     },
@@ -188,7 +192,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-29",
           "all_time_low": 4180,
-          "all_time_low_date": "2026-04-28"
+          "all_time_low_date": "2026-04-28",
+          "sale_start": "2026-04-29"
         }
       }
     },

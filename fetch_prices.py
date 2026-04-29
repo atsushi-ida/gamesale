@@ -22,8 +22,8 @@ PERIPHERALS = [
     {"id": "sw2_pro",    "name": "Switch2 プロコントローラー", "msrp": 9980,  "url": "https://item.rakuten.co.jp/book/18210484/"},
     {"id": "sw2_body",   "name": "Nintendo Switch2 本体",      "msrp": 49980, "url": "https://item.rakuten.co.jp/book/18210481/"},
     {"id": "sw_pro",     "name": "Switch プロコントローラー",   "msrp": 7678,  "url": "https://item.rakuten.co.jp/book/14647228/"},
-    {"id": "ds_white",   "name": "DualSense コントローラー 白", "msrp": 9480,  "url": "https://books.rakuten.co.jp/rb/18440638/"},
-    {"id": "ds_black",   "name": "DualSense コントローラー 黒", "msrp": 9480,  "url": "https://books.rakuten.co.jp/rb/18440639/"},
+    {"id": "ds_white",   "name": "DualSense コントローラー 白", "msrp": 11480, "url": "https://books.rakuten.co.jp/rb/18440638/"},
+    {"id": "ds_black",   "name": "DualSense コントローラー 黒", "msrp": 11480, "url": "https://books.rakuten.co.jp/rb/18440639/"},
     {"id": "samsung512", "name": "Samsung microSDXpress 512GB", "msrp": 19980, "url": "https://item.rakuten.co.jp/itgm/4560441099989/"},
     {"id": "sandisk256", "name": "SanDisk microSDExpress 256GB","msrp": 8980,  "url": "https://books.rakuten.co.jp/rb/18210486/"},
 ]
@@ -46,7 +46,7 @@ GAMES = [
     {"id": "elden_ring", "title": "ELDEN RING", "maker": "フロムソフトウェア", "nsuid": None, "steam_id": "1245620", "is_switch2": False},
     # Switch2専用タイトル
     {"id": "mariokart_world", "title": "マリオカート ワールド", "maker": "任天堂", "nsuid": "70010000092842", "steam_id": None, "is_switch2": True},
-    {"id": "donkey_kong_bananza", "title": "ドンキーコング バナナーラ", "maker": "任天堂", "nsuid": "70010000096306", "steam_id": None, "is_switch2": True},
+    {"id": "donkey_kong_bananza", "title": "ドンキーコング バナンザ", "maker": "任天堂", "nsuid": "70010000096306", "steam_id": None, "is_switch2": True},
     {"id": "poco_a_pokemon", "title": "ぽこ あ ポケモン", "maker": "任天堂", "nsuid": "70010000107420", "steam_id": None, "is_switch2": True},
     {"id": "deltarune", "title": "DELTARUNE", "maker": "tobyfox", "nsuid": "70010000096639", "steam_id": None, "is_switch2": True},
 ]
@@ -117,7 +117,17 @@ def fetch_rakuten_price(url):
                         return price
             return None
 
-        # item.rakuten.co.jp: JSON-LDが信頼できる
+        # item.rakuten.co.jp: class="price"で取得
+        for el in soup.find_all(class_="price"):
+            text = el.get_text(strip=True)
+            # 「9,980円」「49,979円（税込）」両方に対応
+            m = _re.search(r"([\d,]{4,})円", text)
+            if m:
+                price = int(m.group(1).replace(",", ""))
+                if 1000 <= price <= 300000:
+                    return price
+
+        # JSON-LDにフォールバック
         for s in soup.find_all("script", type="application/ld+json"):
             try:
                 d = json.loads(s.string or "")
@@ -132,10 +142,9 @@ def fetch_rakuten_price(url):
             except Exception:
                 pass
 
-        # item.rakuten.co.jp 専用セレクタ
+        # 専用セレクタにフォールバック
         for sel in [
             "span.price--OKm9j",
-            ".price--OKm9j",
             "[class*='price__main']",
             "[class*='ItemPrice']",
             ".item-price",
@@ -155,20 +164,30 @@ def fetch_rakuten_price(url):
         return None
 
 def fetch_and_save_peripherals(existing_peripherals):
-    """周辺機器の価格を取得してperipherals.jsonに保存"""
+    """周辺機器の価格を取得してperipherals.jsonに保存（並列処理）"""
     print("\n【周辺機器価格取得】")
     prev_items = {i["id"]: i for i in existing_peripherals.get("items", [])}
-    items_out = []
-    for p in PERIPHERALS:
-        print(f"  🔍 {p['name']}...", end=" ", flush=True)
+
+    def fetch_one(p):
         price = fetch_rakuten_price(p["url"])
-        if price:
-            print(f"¥{price:,}")
-        else:
+        if not price:
             price = prev_items.get(p["id"], {}).get("price")
-            print(f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗")
-        items_out.append({"id": p["id"], "price": price, "msrp": p.get("msrp")})
-        time.sleep(REQUEST_INTERVAL)
+            status = f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗"
+        else:
+            status = f"¥{price:,}"
+        print(f"  🔍 {p['name']}... {status}")
+        return {"id": p["id"], "price": price, "msrp": p.get("msrp")}
+
+    items_out = []
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(fetch_one, p) for p in PERIPHERALS]
+        for future in as_completed(futures):
+            items_out.append(future.result())
+
+    # 元の順番に並び替え
+    order = {p["id"]: i for i, p in enumerate(PERIPHERALS)}
+    items_out.sort(key=lambda x: order.get(x["id"], 99))
+
     result = {"last_updated": today_str(), "items": items_out}
     save_json(PERIPHERALS_FILE, result)
     return result

@@ -326,22 +326,20 @@
       "title": "Pokémon LEGENDS Z-A",
       "maker": "ゲームフリーク",
       "is_switch2": false,
-      "nsuid": "70010000096006",
+      "nsuid": "70010000094233",
       "steam_id": null,
       "prices": {
         "eshop": {
-          "status": "on_sale",
-          "on_sale": true,
-          "regular_price": 1430,
-          "sale_price": 880,
-          "discount_pct": 38,
-          "sale_end": "2026-05-07",
-          "sale_name": null,
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 7100,
+          "sale_price": null,
+          "discount_pct": 0,
           "currency": "JPY",
           "fetched_at": "2026-04-30",
           "all_time_low": 880,
           "all_time_low_date": "2026-04-30",
-          "sale_start": "2026-04-30"
+          "sale_start": null
         }
       }
     }

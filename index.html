@@ -264,6 +264,10 @@ header{position:sticky;top:0;z-index:300;background:rgba(7,9,15,.96);backdrop-fi
 .cal-legend{font-size:9px;color:var(--text3);margin-top:6px;display:flex;flex-wrap:wrap;gap:5px}
 .cal-legend-item{display:flex;align-items:center;gap:3px}
 .cal-legend-dot{width:7px;height:7px;border-radius:2px}
+.geo-badge{font-size:10px;background:rgba(255,193,7,.12);border:1px solid rgba(255,193,7,.3);color:#c8960c;border-radius:4px;padding:2px 7px;display:inline-block}
+[data-theme="light"] .geo-badge{color:#8a6500}
+.sale-name-badge{font-size:9px;background:rgba(255,193,7,.15);border:1px solid rgba(255,193,7,.35);color:#e6ac00;border-radius:3px;padding:1px 5px;white-space:nowrap}
+[data-theme="light"] .sale-name-badge{color:#a07800}
 /* 周辺機器価格 */
 .peri-price{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--accent2);flex-shrink:0}
 .peri-loading{font-size:10px;color:var(--text3)}
@@ -648,13 +652,13 @@ function calNext() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCa
 
 // ===== 周辺機器（peripherals.json読み込み） =====
 const PERI_DEFAULTS = [
-  { id:'sw2_pro',   name:'Switch2 プロコントローラー', cat:'🟠 Nintendo Switch2', price:9980,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18210484%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
-  { id:'sw2_body',  name:'Nintendo Switch2 本体',      cat:'🟠 Nintendo Switch2', price:49980, url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18210481%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
-  { id:'sw_pro',    name:'Switch プロコントローラー',   cat:'🎮 Nintendo Switch',  price:7480,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F14647228%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
-  { id:'ds_white',  name:'DualSense コントローラー 白', cat:'🎯 PlayStation 5',    price:9480,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18440638%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
-  { id:'ds_black',  name:'DualSense コントローラー 黒', cat:'🎯 PlayStation 5',    price:9480,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18440639%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
-  { id:'samsung512',name:'Samsung microSDXpress 512GB', cat:'🟠 Switch2対応SD',    price:12980, url:'https://hb.afl.rakuten.co.jp/ichiba/5348961a.e0ed1359.5348961b.3946baab/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fitgm%2F4560441099989%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
-  { id:'sandisk256',name:'SanDisk microSDExpress 256GB',cat:'🟠 Switch2対応SD',    price:8980,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18210486%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
+  { id:'sw2_pro',   name:'Switch2 プロコントローラー', cat:'🟠 Nintendo Switch2', price:9980,  msrp:9980,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18210484%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
+  { id:'sw2_body',  name:'Nintendo Switch2 本体',      cat:'🟠 Nintendo Switch2', price:49980, msrp:49980, url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18210481%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
+  { id:'sw_pro',    name:'Switch プロコントローラー',   cat:'🎮 Nintendo Switch',  price:7678,  msrp:7678,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F14647228%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
+  { id:'ds_white',  name:'DualSense コントローラー 白', cat:'🎯 PlayStation 5',    price:9480,  msrp:9480,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18440638%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
+  { id:'ds_black',  name:'DualSense コントローラー 黒', cat:'🎯 PlayStation 5',    price:9480,  msrp:9480,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18440639%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
+  { id:'samsung512',name:'Samsung microSDXpress 512GB', cat:'🟠 Switch2対応SD',    price:19980, msrp:19980, url:'https://hb.afl.rakuten.co.jp/ichiba/5348961a.e0ed1359.5348961b.3946baab/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fitgm%2F4560441099989%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
+  { id:'sandisk256',name:'SanDisk microSDExpress 256GB',cat:'🟠 Switch2対応SD',    price:6560,  msrp:8980,  url:'https://hb.afl.rakuten.co.jp/ichiba/53488ac0.5538c619.53488ac1.2ed4a02d/_RTLink131784?pc=https%3A%2F%2Fitem.rakuten.co.jp%2Fbook%2F18210486%2F&link_type=hybrid_url&ut=eyJwYWdlIjoiaXRlbSIsInR5cGUiOiJoeWJyaWRfdXJsIiwic2l6ZSI6IjI0MHgyNDAiLCJuYW0iOjEsIm5hbXAiOiJyaWdodCIsImNvbSI6MSwiY29tcCI6ImRvd24iLCJwcmljZSI6MSwiYm9yIjoxLCJjb2wiOjEsImJidG4iOjEsInByb2QiOjAsImFtcCI6ZmFsc2V9' },
 ];
 
 function renderPeripherals(items, updated) {
@@ -662,14 +666,24 @@ function renderPeripherals(items, updated) {
   if (!list) return;
   const upEl = document.getElementById('periUpdated');
   if (upEl && updated) upEl.textContent = '更新: ' + updated;
-  list.innerHTML = items.map(p => `
+  list.innerHTML = items.map(p => {
+    const msrp = p.msrp;
+    const price = p.price;
+    const isDiscount = msrp && price && price < msrp;
+    const discPct = isDiscount ? Math.round((1 - price/msrp)*100) : 0;
+    return `
     <div class="hot-row">
       <div class="hi">
         <div class="ht"><a href="${p.url}" target="_blank" rel="noopener" style="color:var(--text);text-decoration:none">${p.name}</a></div>
         <div class="hm">${p.cat}</div>
       </div>
-      <div class="peri-price">${p.price ? '¥'+Number(p.price).toLocaleString() : '-'}</div>
-    </div>`).join('');
+      <div style="text-align:right;flex-shrink:0">
+        ${isDiscount ? `<div style="font-size:9px;color:var(--text3);text-decoration:line-through">¥${Number(msrp).toLocaleString()}</div>` : ''}
+        <div class="peri-price">${price ? '¥'+Number(price).toLocaleString() : '-'}</div>
+        ${isDiscount ? `<div style="font-size:9px;color:var(--accent)">-${discPct}%</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 async function loadPeripherals() {
@@ -680,13 +694,25 @@ async function loadPeripherals() {
     // peripherals.jsonの形式: { last_updated: "YYYY-MM-DD", items: [{id, price}, ...] }
     const merged = PERI_DEFAULTS.map(def => {
       const found = (data.items || []).find(i => i.id === def.id);
-      return { ...def, price: found?.price ?? def.price };
+      return { ...def, price: found?.price ?? def.price, msrp: found?.msrp ?? def.msrp };
     });
     renderPeripherals(merged, data.last_updated);
   } catch {
     // フォールバック：デフォルト価格を使用
     renderPeripherals(PERI_DEFAULTS, null);
   }
+}
+
+// ===== GEO中古価格 =====
+let geoData = null;
+async function loadGeoprices() {
+  try {
+    const resp = await fetch('./data/geo_prices.json?t=' + Date.now());
+    if (!resp.ok) return;
+    geoData = await resp.json();
+    // データ読み込み後にカードを再描画
+    if (priceData) renderAll();
+  } catch { /* geo_prices.jsonがなければ無視 */ }
 }
 
 // ===== カード生成 =====
@@ -702,14 +728,22 @@ function createCard(gameId, game, index) {
   if (prices.ps) platPills.push('<span class="pp pp-ps">PS</span>');
   if (prices.xbox) platPills.push('<span class="pp pp-xb">Xbox</span>');
 
+  // GEO中古価格
+  const geoMatch = geoData?.matched_games?.[gameId];
+  const geoBadge = geoMatch
+    ? `<div style="margin-top:4px"><span class="geo-badge">📦 中古(GEO) ¥${Number(geoMatch.price).toLocaleString()}</span></div>`
+    : '';
+
   // 価格表示
   let priceHtml = '';
   if (best) {
     const regularPrice = prices[best.platform]?.regular_price;
+    const saleName = prices[best.platform]?.sale_name;
     priceHtml = `
       ${regularPrice ? `<span class="orig">${formatPrice(regularPrice)}</span>` : ''}
       <span class="bprice">${formatPrice(best.price)}</span>
       <span class="dtag">-${best.discount}%</span>
+      ${saleName ? `<span class="sale-name-badge">${saleName}</span>` : ''}
       ${atl ? '<span class="rtag">🏆 過去最安値</span>' : ''}
       ${days !== null && days <= 7 ? `<span class="dead">⏰ あと${days}日</span>` : ''}
       ${game.is_switch2 ? '<span class="sw2tag">Switch2対応</span>' : ''}
@@ -754,7 +788,7 @@ function createCard(gameId, game, index) {
             <td><span class="pval${isBest ? ' cheap' : ''}">${pdata.on_sale ? formatPrice(pdata.sale_price) : (pdata.regular_price ? formatPrice(pdata.regular_price) : '-')}</span></td>
             <td><span class="${pdata.discount_pct > 0 ? 'poff hi' : 'poff'}">${pdata.discount_pct > 0 ? '-' + pdata.discount_pct + '%' : '通常'}</span></td>
             <td><span class="${endDays !== null && endDays <= 7 ? 'pdl-soon' : 'pdl-ok'}">${pdata.sale_end ? pdata.sale_end + (endDays !== null ? ` (あと${endDays}日)` : '') : '-'}</span></td>
-            <td class="pnote">${pdata.regular_price ? '定価 ' + formatPrice(pdata.regular_price) : ''}</td>
+            <td class="pnote">${pdata.sale_name ? `<span class="sale-name-badge">${pdata.sale_name}</span>` : (pdata.regular_price ? '定価 ' + formatPrice(pdata.regular_price) : '')}</td>
           </tr>
         </table>
       </div>`;
@@ -821,7 +855,7 @@ function createCard(gameId, game, index) {
           </div>
           <button class="exbtn">詳細 ▼</button>
         </div>
-        <div class="psum">${priceHtml}</div>
+        ${geoBadge}
       </div>
     </div>
     <div class="panel">
@@ -1148,6 +1182,7 @@ document.getElementById('notifModal').addEventListener('click', function(e) {
 // ===== 起動 =====
 loadData();
 loadPeripherals();
+loadGeoprices();
 renderCalendarEmpty(); // 初期表示（データなしでも月グリッドを表示）
 </script>
 </body>

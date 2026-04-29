@@ -16,15 +16,15 @@ HISTORY_FILE = DATA_DIR / "history.json"
 PERIPHERALS_FILE = DATA_DIR / "peripherals.json"
 REQUEST_INTERVAL = 1.5
 
-# 周辺機器リスト（直接URLを指定）
+# 周辺機器リスト（直接URLを指定、msrp=メーカー希望小売価格）
 PERIPHERALS = [
-    {"id": "sw2_pro",    "name": "Switch2 プロコントローラー", "url": "https://item.rakuten.co.jp/book/18210484/"},
-    {"id": "sw2_body",   "name": "Nintendo Switch2 本体",      "url": "https://item.rakuten.co.jp/book/18210481/"},
-    {"id": "sw_pro",     "name": "Switch プロコントローラー",   "url": "https://item.rakuten.co.jp/book/14647228/"},
-    {"id": "ds_white",   "name": "DualSense コントローラー 白", "url": "https://books.rakuten.co.jp/rb/18440638/"},
-    {"id": "ds_black",   "name": "DualSense コントローラー 黒", "url": "https://books.rakuten.co.jp/rb/18440639/"},
-    {"id": "samsung512", "name": "Samsung microSDXpress 512GB", "url": "https://item.rakuten.co.jp/itgm/4560441099989/"},
-    {"id": "sandisk256", "name": "SanDisk microSDExpress 256GB","url": "https://books.rakuten.co.jp/rb/18210486/"},
+    {"id": "sw2_pro",    "name": "Switch2 プロコントローラー", "msrp": 9980,  "url": "https://item.rakuten.co.jp/book/18210484/"},
+    {"id": "sw2_body",   "name": "Nintendo Switch2 本体",      "msrp": 49980, "url": "https://item.rakuten.co.jp/book/18210481/"},
+    {"id": "sw_pro",     "name": "Switch プロコントローラー",   "msrp": 7678,  "url": "https://item.rakuten.co.jp/book/14647228/"},
+    {"id": "ds_white",   "name": "DualSense コントローラー 白", "msrp": 9480,  "url": "https://books.rakuten.co.jp/rb/18440638/"},
+    {"id": "ds_black",   "name": "DualSense コントローラー 黒", "msrp": 9480,  "url": "https://books.rakuten.co.jp/rb/18440639/"},
+    {"id": "samsung512", "name": "Samsung microSDXpress 512GB", "msrp": 19980, "url": "https://item.rakuten.co.jp/itgm/4560441099989/"},
+    {"id": "sandisk256", "name": "SanDisk microSDExpress 256GB","msrp": 8980,  "url": "https://books.rakuten.co.jp/rb/18210486/"},
 ]
 
 HEADERS = {
@@ -97,13 +97,44 @@ def fetch_rakuten_price(url):
         resp = requests.get(url, headers=HEADERS, timeout=15)
         resp.raise_for_status()
         soup = BeautifulSoup(resp.text, "html.parser")
+        is_books = "books.rakuten.co.jp" in url
 
-        # 1) JSON-LD から取得（最も信頼性が高い）
+        if is_books:
+            # books.rakuten: 実売価格は大きな赤い数字。参考小売価格(取消線)は除外
+            # 取消線テキストを除去してから探す
+            for strike in soup.find_all(["s", "del", "strike"]):
+                strike.decompose()
+            # 「円（税込）」直前の数字を探す
+            price_text = soup.get_text()
+            m = _re.search(r"([\d,]{4,})円(?:\s*（税込）|\s*\(税込\))", price_text)
+            if m:
+                price = int(m.group(1).replace(",", ""))
+                if 1000 <= price <= 300000:
+                    return price
+            # セレクタで探す（取消線除去済み）
+            for sel in [
+                ".rkb-price__main-price",
+                ".rkb-price__selling-price",
+                "span.selling-price",
+                "[class*='selling']",
+                ".bk-price",
+                "[class*='price']",
+            ]:
+                el = soup.select_one(sel)
+                if el:
+                    text = el.get_text(strip=True)
+                    m = _re.search(r"([\d,]{4,})円", text)
+                    if m:
+                        price = int(m.group(1).replace(",", ""))
+                        if 1000 <= price <= 300000:
+                            return price
+            return None
+
+        # item.rakuten.co.jp: JSON-LDが信頼できる
         for s in soup.find_all("script", type="application/ld+json"):
             try:
                 d = json.loads(s.string or "")
                 offers = d.get("offers", {})
-                # offers がリストの場合もある
                 if isinstance(offers, list):
                     offers = offers[0]
                 p = offers.get("price") or offers.get("lowPrice")
@@ -114,24 +145,7 @@ def fetch_rakuten_price(url):
             except Exception:
                 pass
 
-        # 2) books.rakuten.co.jp 専用セレクタ
-        for sel in [
-            ".rkb-price__main-price",
-            ".rkb-price__selling-price",
-            "span.selling-price",
-            "[class*='selling']",
-            ".bk-price",
-        ]:
-            el = soup.select_one(sel)
-            if el:
-                text = el.get_text(strip=True)
-                m = _re.search(r"[\d,]{4,}", text)
-                if m:
-                    price = int(m.group(0).replace(",", ""))
-                    if 1000 <= price <= 300000:
-                        return price
-
-        # 3) item.rakuten.co.jp 専用セレクタ
+        # item.rakuten.co.jp 専用セレクタ
         for sel in [
             "span.price--OKm9j",
             ".price--OKm9j",
@@ -147,15 +161,6 @@ def fetch_rakuten_price(url):
                     price = int(m.group(0).replace(",", ""))
                     if 1000 <= price <= 300000:
                         return price
-
-        # 4) 全体から価格パターンを探す（フォールバック）
-        for el in soup.find_all(["span", "div", "p"], class_=_re.compile(r"price|Price|yen|Yen", _re.I)):
-            text = el.get_text(strip=True)
-            m = _re.search(r"[\d,]{4,}", text)
-            if m:
-                price = int(m.group(0).replace(",", ""))
-                if 1000 <= price <= 300000:
-                    return price
 
         return None
     except Exception as e:
@@ -175,7 +180,7 @@ def fetch_and_save_peripherals(existing_peripherals):
         else:
             price = prev_items.get(p["id"], {}).get("price")
             print(f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗")
-        items_out.append({"id": p["id"], "price": price})
+        items_out.append({"id": p["id"], "price": price, "msrp": p.get("msrp")})
         time.sleep(REQUEST_INTERVAL)
     result = {"last_updated": today_str(), "items": items_out}
     save_json(PERIPHERALS_FILE, result)
@@ -202,7 +207,8 @@ def fetch_eshop_price(nsuid):
             disc_val = int(discount.get("raw_value", 0))
             disc_pct = round((1 - disc_val / reg_val) * 100) if reg_val > 0 else 0
             end_date = discount.get("end_datetime", "")
-            return {"status": "on_sale", "on_sale": True, "regular_price": reg_val, "sale_price": disc_val, "discount_pct": disc_pct, "sale_end": end_date[:10] if end_date else None, "currency": "JPY", "fetched_at": today_str()}
+            sale_name = discount.get("promotion_name") or regular.get("promotion_name") or None
+            return {"status": "on_sale", "on_sale": True, "regular_price": reg_val, "sale_price": disc_val, "discount_pct": disc_pct, "sale_end": end_date[:10] if end_date else None, "sale_name": sale_name, "currency": "JPY", "fetched_at": today_str()}
         else:
             return {"status": "not_on_sale", "on_sale": False, "regular_price": reg_val, "sale_price": None, "discount_pct": 0, "currency": "JPY", "fetched_at": today_str()}
     except Exception as e:
@@ -226,10 +232,189 @@ def fetch_steam_price(steam_id):
         regular_price = price_overview.get("initial", 0) // 100
         sale_price = price_overview.get("final", 0) // 100
         discount_pct = price_overview.get("discount_percent", 0)
-        return {"status": "on_sale" if discount_pct > 0 else "not_on_sale", "on_sale": discount_pct > 0, "regular_price": regular_price, "sale_price": sale_price if discount_pct > 0 else None, "discount_pct": discount_pct, "currency": "JPY", "fetched_at": today_str()}
+        sale_name = None
+        if discount_pct > 0:
+            # Steam APIのdiscount_reasonがあれば使う、なければ"-% OFF"で表記
+            sale_name = price_overview.get("discount_reason") or f"Steam セール -{discount_pct}%"
+        return {"status": "on_sale" if discount_pct > 0 else "not_on_sale", "on_sale": discount_pct > 0, "regular_price": regular_price, "sale_price": sale_price if discount_pct > 0 else None, "discount_pct": discount_pct, "sale_name": sale_name, "currency": "JPY", "fetched_at": today_str()}
     except Exception as e:
         print(f"    ⚠ Steamエラー: {e}")
         return None
+
+def fetch_geo_campaign_slug():
+    """ゲオのセール・キャンペーンページから現在のスラグを自動検出"""
+    import re as re2
+    try:
+        resp = requests.get("https://geo-online.co.jp/store_info/sale_campaign/", headers=HEADERS, timeout=15)
+        soup = BeautifulSoup(resp.text, "html.parser")
+        for a in soup.find_all("a", href=re2.compile(r"/store_info/sale_campaign/\w+/flier")):
+            m = re2.search(r"/store_info/sale_campaign/(\w+)/flier", a["href"])
+            if m:
+                return m.group(1)
+        # フォールバック: セールリンクから推測
+        for a in soup.find_all("a", href=re2.compile(r"/store_info/sale_campaign/\w+")):
+            m = re2.search(r"/store_info/sale_campaign/(\w+)(?:/|$)", a["href"])
+            slug = m.group(1) if m else None
+            if slug and slug not in ["", "sale_campaign"]:
+                return slug
+    except Exception as e:
+        print(f"  ⚠ スラグ検出エラー: {e}")
+    return None
+
+def normalize_title(title):
+    """タイトル正規化（全角→半角、記号除去）"""
+    import unicodedata, re as re2
+    title = unicodedata.normalize("NFKC", title)
+    title = re2.sub(r"【.*?】|\(.*?\)（.*?）|　", " ", title)
+    title = re2.sub(r"\s+", " ", title).strip().lower()
+    return title
+
+def match_geo_to_games(geo_items, games_list):
+    """ゲオのゲームタイトルをGAMESリストに照合"""
+    from difflib import SequenceMatcher
+    matched = {}  # game_id -> {price, geo_title, category}
+    for geo in geo_items:
+        geo_norm = normalize_title(geo["title"])
+        best_score = 0
+        best_id = None
+        for game in games_list:
+            game_norm = normalize_title(game["title"])
+            score = SequenceMatcher(None, geo_norm, game_norm).ratio()
+            if score > best_score:
+                best_score = score
+                best_id = game["id"]
+        if best_score >= 0.6 and best_id:
+            # 既存より安ければ更新
+            if best_id not in matched or geo["price"] < matched[best_id]["price"]:
+                matched[best_id] = {
+                    "price": geo["price"],
+                    "geo_title": geo["title"],
+                    "category": geo.get("category", ""),
+                    "match_score": round(best_score, 2)
+                }
+    return matched
+
+def fetch_geo_list_page(url):
+    """ゲオのリストページから全アイテムを取得"""
+    import re as re2
+    items = []
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        soup = BeautifulSoup(resp.text, "html.parser")
+        # カテゴリ名取得
+        cat_el = soup.select_one("h1, h2, .category-title")
+        category = cat_el.get_text(strip=True) if cat_el else ""
+        # 商品リスト取得
+        for li in soup.select("li"):
+            title_el = li.select_one("h2, h3, p")
+            price_el = li.find(string=re2.compile(r"[\d,]+円"))
+            if not title_el:
+                continue
+            title = re2.sub(r"【中古】|【.*?】", "", title_el.get_text(strip=True)).strip()
+            if not title or len(title) < 3:
+                continue
+            price = None
+            if price_el:
+                m = re2.search(r"([\d,]+)円", price_el)
+                if m:
+                    price = int(m.group(1).replace(",", ""))
+            if title and price and 100 <= price <= 50000:
+                items.append({"title": title, "price": price, "category": category})
+        time.sleep(REQUEST_INTERVAL)
+    except Exception as e:
+        print(f"  ⚠ リストページエラー ({url}): {e}")
+    return items
+
+def fetch_geo_prices():
+    """ゲオのセール情報を取得してgeo_prices.jsonに保存"""
+    print("\n【ゲオ中古価格取得】")
+    slug = fetch_geo_campaign_slug()
+    if not slug:
+        print("  ⚠ キャンペーンスラグが検出できませんでした")
+        return
+    print(f"  キャンペーン: {slug}")
+
+    flier_url = f"https://geo-online.co.jp/store_info/sale_campaign/{slug}/flier.html"
+    all_items = []
+    sale_end = None
+    campaign_name = slug
+
+    try:
+        resp = requests.get(flier_url, headers=HEADERS, timeout=15)
+        soup = BeautifulSoup(resp.text, "html.parser")
+
+        # キャンペーン名・期間取得
+        h1 = soup.select_one("h1")
+        if h1:
+            campaign_name = h1.get_text(strip=True)
+        import re as re2
+        title_text = soup.title.string if soup.title else ""
+        m = re2.search(r"(\d+月\d+日)", title_text + campaign_name)
+        if m:
+            sale_end = m.group(1)
+
+        # 「もっと見る」リンクからリストページURLを収集
+        list_urls = []
+        for a in soup.find_all("a", string=re2.compile(r"もっと見る")):
+            href = a.get("href", "")
+            if "list.html" in href:
+                full_url = href if href.startswith("http") else "https://geo-online.co.jp" + href
+                if full_url not in list_urls:
+                    list_urls.append(full_url)
+
+        # フライヤーページ上のアイテムも取得
+        for section in soup.select("section, .section, ul"):
+            for li in section.select("li"):
+                title_el = li.select_one("h3, h4, p")
+                price_el = li.find(string=re2.compile(r"[\d,]+円"))
+                if not title_el:
+                    continue
+                title = re2.sub(r"【中古】|【.*?】", "", title_el.get_text(strip=True)).strip()
+                if not title or len(title) < 3:
+                    continue
+                price = None
+                if price_el:
+                    pm = re2.search(r"([\d,]+)円", price_el)
+                    if pm:
+                        price = int(pm.group(1).replace(",", ""))
+                if title and price and 100 <= price <= 50000:
+                    # カテゴリを上位h3から推定
+                    cat_el = section.find_previous(["h2", "h3"])
+                    cat = cat_el.get_text(strip=True) if cat_el else ""
+                    all_items.append({"title": title, "price": price, "category": cat})
+
+        # リストページを取得
+        for list_url in list_urls[:8]:
+            print(f"  📋 {list_url.split('?')[-1]}...", end=" ", flush=True)
+            items = fetch_geo_list_page(list_url)
+            print(f"{len(items)}件")
+            all_items.extend(items)
+
+    except Exception as e:
+        print(f"  ⚠ フライヤー取得エラー: {e}")
+        return
+
+    if not all_items:
+        print("  ⚠ アイテムが取得できませんでした")
+        return
+
+    print(f"  取得合計: {len(all_items)}件")
+
+    # GAMESリストと照合
+    matched = match_geo_to_games(all_items, GAMES)
+    print(f"  マッチ: {len(matched)}件")
+    for gid, info in matched.items():
+        print(f"    ✅ {gid} ← {info['geo_title']} ¥{info['price']:,} (スコア:{info['match_score']})")
+
+    result = {
+        "last_updated": today_str(),
+        "campaign_name": campaign_name,
+        "sale_end": sale_end,
+        "slug": slug,
+        "matched_games": matched,
+        "all_items": all_items[:200]  # 最大200件保存
+    }
+    save_json(DATA_DIR / "geo_prices.json", result)
 
 def main():
     print("=" * 50)
@@ -290,6 +475,9 @@ def main():
     # 周辺機器価格取得
     existing_peripherals = load_json(PERIPHERALS_FILE) if PERIPHERALS_FILE.exists() else {}
     fetch_and_save_peripherals(existing_peripherals)
+
+    # ゲオ中古価格取得
+    fetch_geo_prices()
 
     print("\n" + "=" * 50)
     print("✅ 完了！")

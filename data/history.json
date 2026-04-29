@@ -16,6 +16,12 @@
         "sale_price": 1535,
         "regular_price": 7678,
         "discount_pct": 80
+      },
+      {
+        "date": "2026-04-30",
+        "sale_price": 1535,
+        "regular_price": 7678,
+        "discount_pct": 80
       }
     ],
     "current_sale_start": "2026-04-29"
@@ -34,6 +40,12 @@
       },
       {
         "date": "2026-04-29",
+        "sale_price": 594,
+        "regular_price": 3960,
+        "discount_pct": 85
+      },
+      {
+        "date": "2026-04-30",
         "sale_price": 594,
         "regular_price": 3960,
         "discount_pct": 85
@@ -58,6 +70,12 @@
         "sale_price": 4180,
         "regular_price": 8360,
         "discount_pct": 50
+      },
+      {
+        "date": "2026-04-30",
+        "sale_price": 4180,
+        "regular_price": 8360,
+        "discount_pct": 50
       }
     ],
     "current_sale_start": "2026-04-29"
@@ -79,6 +97,12 @@
         "sale_price": 1535,
         "regular_price": 7678,
         "discount_pct": 80
+      },
+      {
+        "date": "2026-04-30",
+        "sale_price": 1535,
+        "regular_price": 7678,
+        "discount_pct": 80
       }
     ],
     "current_sale_start": "2026-04-29"
@@ -91,6 +115,12 @@
     "records": [
       {
         "date": "2026-04-29",
+        "sale_price": 3120,
+        "regular_price": 7800,
+        "discount_pct": 60
+      },
+      {
+        "date": "2026-04-30",
         "sale_price": 3120,
         "regular_price": 7800,
         "discount_pct": 60

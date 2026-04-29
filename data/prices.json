@@ -6,6 +6,8 @@
       "title": "ペルソナ5 ザ・ロイヤル",
       "maker": "アトラス",
       "is_switch2": false,
+      "nsuid": "70010000042356",
+      "steam_id": "1687950",
       "prices": {
         "eshop": {
           "status": "on_sale",
@@ -37,6 +39,8 @@
       "title": "モンスターハンターライズ：サンブレイク セット",
       "maker": "カプコン",
       "is_switch2": false,
+      "nsuid": "70070000013655",
+      "steam_id": "1446780",
       "prices": {
         "eshop": {
           "status": "not_on_sale",
@@ -63,6 +67,8 @@
       "title": "ドラゴンクエストXI S 過ぎ去りし時を求めて S",
       "maker": "スクウェア・エニックス",
       "is_switch2": false,
+      "nsuid": "70070000006461",
+      "steam_id": "860510",
       "prices": {
         "eshop": {
           "status": "not_on_sale",
@@ -91,6 +97,8 @@
       "title": "ゼノブレイド3",
       "maker": "任天堂",
       "is_switch2": false,
+      "nsuid": "70010000053335",
+      "steam_id": null,
       "prices": {
         "eshop": {
           "status": "not_on_sale",
@@ -108,6 +116,8 @@
       "title": "バイオハザード ヴィレッジ",
       "maker": "カプコン",
       "is_switch2": false,
+      "nsuid": null,
+      "steam_id": "1196590",
       "prices": {
         "steam": {
           "status": "not_on_sale",
@@ -125,6 +135,8 @@
       "title": "オクトパストラベラー2",
       "maker": "スクウェア・エニックス",
       "is_switch2": false,
+      "nsuid": null,
+      "steam_id": "1993360",
       "prices": {}
     },
     "guilty_gear_strive": {
@@ -132,6 +144,8 @@
       "title": "GUILTY GEAR -STRIVE-",
       "maker": "アークシステムワークス",
       "is_switch2": false,
+      "nsuid": null,
+      "steam_id": "1384160",
       "prices": {
         "steam": {
           "status": "not_on_sale",
@@ -149,6 +163,8 @@
       "title": "Lies of P",
       "maker": "NEOWIZ",
       "is_switch2": false,
+      "nsuid": null,
+      "steam_id": "1627720",
       "prices": {
         "steam": {
           "status": "on_sale",
@@ -168,6 +184,8 @@
       "title": "SEKIRO: SHADOWS DIE TWICE",
       "maker": "フロムソフトウェア",
       "is_switch2": false,
+      "nsuid": null,
+      "steam_id": "814380",
       "prices": {
         "steam": {
           "status": "not_on_sale",
@@ -185,6 +203,8 @@
       "title": "ELDEN RING",
       "maker": "フロムソフトウェア",
       "is_switch2": false,
+      "nsuid": null,
+      "steam_id": "1245620",
       "prices": {
         "steam": {
           "status": "not_on_sale",

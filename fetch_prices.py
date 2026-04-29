@@ -1,6 +1,6 @@
 """
-ゲーセル - 価格データ取得スクリプト v4
-eショップ個別価格API対応版
+ゲーセル - 価格データ取得スクリプト v5
+nsuid・steam_idをprices.jsonに保存するよう修正
 """
 
 import json
@@ -19,7 +19,6 @@ HEADERS = {
     "Accept-Language": "ja-JP,ja;q=0.9",
 }
 
-# 監視対象ゲームリスト
 GAMES = [
     {
         "id": "persona5_royal",
@@ -127,13 +126,7 @@ def update_history(history, game_id, platform, price_data):
         return history
     key = f"{game_id}_{platform}"
     if key not in history:
-        history[key] = {
-            "game_id": game_id,
-            "platform": platform,
-            "all_time_low": None,
-            "all_time_low_date": None,
-            "records": []
-        }
+        history[key] = {"game_id": game_id, "platform": platform, "all_time_low": None, "all_time_low_date": None, "records": []}
     current = price_data.get("sale_price")
     if not current:
         return history
@@ -155,16 +148,9 @@ def update_history(history, game_id, platform, price_data):
     return history
 
 
-# ========== eショップ 個別価格API ==========
-
 def fetch_eshop_price(nsuid):
-    """eショップの個別タイトル価格を取得"""
     url = "https://api.ec.nintendo.com/v1/price"
-    params = {
-        "country": "JP",
-        "lang": "ja",
-        "ids": nsuid,
-    }
+    params = {"country": "JP", "lang": "ja", "ids": nsuid}
     try:
         resp = requests.get(url, params=params, headers=HEADERS, timeout=15)
         resp.raise_for_status()
@@ -172,48 +158,34 @@ def fetch_eshop_price(nsuid):
         prices = data.get("prices", [])
         if not prices:
             return None
-
         price_info = prices[0]
         status = price_info.get("sales_status", "")
-
         if status == "not_found":
             return {"status": "not_found", "on_sale": False}
-
         regular = price_info.get("regular_price", {})
         discount = price_info.get("discount_price", {})
-
         reg_val = int(regular.get("raw_value", 0))
-
         if discount and status == "onsale":
             disc_val = int(discount.get("raw_value", 0))
             disc_pct = round((1 - disc_val / reg_val) * 100) if reg_val > 0 else 0
             end_date = discount.get("end_datetime", "")
             return {
-                "status": "on_sale",
-                "on_sale": True,
-                "regular_price": reg_val,
-                "sale_price": disc_val,
+                "status": "on_sale", "on_sale": True,
+                "regular_price": reg_val, "sale_price": disc_val,
                 "discount_pct": disc_pct,
                 "sale_end": end_date[:10] if end_date else None,
-                "currency": "JPY",
-                "fetched_at": today_str(),
+                "currency": "JPY", "fetched_at": today_str(),
             }
         else:
             return {
-                "status": "not_on_sale",
-                "on_sale": False,
-                "regular_price": reg_val,
-                "sale_price": None,
-                "discount_pct": 0,
-                "currency": "JPY",
-                "fetched_at": today_str(),
+                "status": "not_on_sale", "on_sale": False,
+                "regular_price": reg_val, "sale_price": None,
+                "discount_pct": 0, "currency": "JPY", "fetched_at": today_str(),
             }
     except Exception as e:
         print(f"    ⚠ eショップエラー: {e}")
         return None
 
-
-# ========== Steam ==========
 
 def fetch_steam_price(steam_id):
     url = "https://store.steampowered.com/api/appdetails"
@@ -238,29 +210,22 @@ def fetch_steam_price(steam_id):
             "regular_price": regular_price,
             "sale_price": sale_price if discount_pct > 0 else None,
             "discount_pct": discount_pct,
-            "currency": "JPY",
-            "fetched_at": today_str(),
+            "currency": "JPY", "fetched_at": today_str(),
         }
     except Exception as e:
         print(f"    ⚠ Steamエラー: {e}")
         return None
 
 
-# ========== メイン ==========
-
 def main():
     print("=" * 50)
-    print("ゲーセル 価格取得スクリプト v4")
+    print("ゲーセル 価格取得スクリプト v5")
     print(f"実行日時: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 50)
 
     history = load_json(HISTORY_FILE)
     today = today_str()
-
-    all_prices = {
-        "last_updated": today,
-        "games": {},
-    }
+    all_prices = {"last_updated": today, "games": {}}
 
     print("\n【価格取得開始】")
     eshop_on_sale = 0
@@ -275,10 +240,11 @@ def main():
             "title": game["title"],
             "maker": game["maker"],
             "is_switch2": game.get("is_switch2", False),
+            "nsuid": game.get("nsuid"),        # ★ eショップURLに使用
+            "steam_id": game.get("steam_id"),  # ★ SteamURLに使用
             "prices": {}
         }
 
-        # eショップ
         if game.get("nsuid"):
             eshop_data = fetch_eshop_price(game["nsuid"])
             if eshop_data:
@@ -286,12 +252,11 @@ def main():
                 history = update_history(history, game_id, "eshop", eshop_data)
                 if eshop_data.get("on_sale"):
                     eshop_on_sale += 1
-                    print(f"    🎮 eショップ: ¥{eshop_data['sale_price']} (-{eshop_data['discount_pct']}%) 🔥 {eshop_data.get('sale_end','')}")
+                    print(f"    🎮 eショップ: ¥{eshop_data['sale_price']} (-{eshop_data['discount_pct']}%) 🔥")
                 else:
                     print(f"    🎮 eショップ: ¥{eshop_data.get('regular_price','?')} 通常価格")
             time.sleep(REQUEST_INTERVAL)
 
-        # Steam
         if game.get("steam_id"):
             steam_data = fetch_steam_price(game["steam_id"])
             if steam_data:
@@ -313,21 +278,18 @@ def main():
 
         all_prices["games"][game_id] = game_entry
 
-    # 保存
     print("\n【データ保存】")
     save_json(PRICES_FILE, all_prices)
     save_json(HISTORY_FILE, history)
 
-    # サマリー
     print("\n" + "=" * 50)
     print("✅ 完了！")
     print(f"  eショップ セール中: {eshop_on_sale}件")
     print(f"  Steam セール中: {steam_on_sale}件")
-    print("\n🔥 セール中タイトル:")
     for gid, gdata in all_prices["games"].items():
-        for platform, pdata in gdata.get("prices", {}).items():
+        for plat, pdata in gdata.get("prices", {}).items():
             if pdata.get("on_sale"):
-                print(f"  {gdata['title']} [{platform}] ¥{pdata.get('sale_price')} (-{pdata.get('discount_pct')}%)")
+                print(f"  🔥 {gdata['title']} [{plat}] ¥{pdata.get('sale_price')} (-{pdata.get('discount_pct')}%)")
     print("=" * 50)
 
 

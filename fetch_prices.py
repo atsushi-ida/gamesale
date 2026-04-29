@@ -155,30 +155,20 @@ def fetch_rakuten_price(url):
         return None
 
 def fetch_and_save_peripherals(existing_peripherals):
-    """周辺機器の価格を取得してperipherals.jsonに保存（並列処理）"""
+    """周辺機器の価格を取得してperipherals.jsonに保存"""
     print("\n【周辺機器価格取得】")
     prev_items = {i["id"]: i for i in existing_peripherals.get("items", [])}
-
-    def fetch_one(p):
-        price = fetch_rakuten_price(p["url"])
-        if not price:
-            price = prev_items.get(p["id"], {}).get("price")
-            status = f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗"
-        else:
-            status = f"¥{price:,}"
-        print(f"  🔍 {p['name']}... {status}")
-        return {"id": p["id"], "price": price, "msrp": p.get("msrp")}
-
     items_out = []
-    with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = [executor.submit(fetch_one, p) for p in PERIPHERALS]
-        for future in as_completed(futures):
-            items_out.append(future.result())
-
-    # 元の順番に並び替え
-    order = {p["id"]: i for i, p in enumerate(PERIPHERALS)}
-    items_out.sort(key=lambda x: order.get(x["id"], 99))
-
+    for p in PERIPHERALS:
+        print(f"  🔍 {p['name']}...", end=" ", flush=True)
+        price = fetch_rakuten_price(p["url"])
+        if price:
+            print(f"¥{price:,}")
+        else:
+            price = prev_items.get(p["id"], {}).get("price")
+            print(f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗")
+        items_out.append({"id": p["id"], "price": price, "msrp": p.get("msrp")})
+        time.sleep(REQUEST_INTERVAL)
     result = {"last_updated": today_str(), "items": items_out}
     save_json(PERIPHERALS_FILE, result)
     return result

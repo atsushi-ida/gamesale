@@ -1,6 +1,6 @@
 """
-ゲーセル - 価格データ取得スクリプト v6
-オクトパストラベラー2 nsuid追加
+ゲーセル - 価格データ取得スクリプト v7
+並列処理対応・Switch2タイトル追加
 """
 
 import json
@@ -9,6 +9,7 @@ import datetime
 import requests
 from bs4 import BeautifulSoup
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 DATA_DIR = Path("data")
 PRICES_FILE = DATA_DIR / "prices.json"
@@ -43,6 +44,11 @@ GAMES = [
     {"id": "lies_of_p", "title": "Lies of P", "maker": "NEOWIZ", "nsuid": None, "steam_id": "1627720", "is_switch2": False},
     {"id": "sekiro", "title": "SEKIRO: SHADOWS DIE TWICE", "maker": "フロムソフトウェア", "nsuid": None, "steam_id": "814380", "is_switch2": False},
     {"id": "elden_ring", "title": "ELDEN RING", "maker": "フロムソフトウェア", "nsuid": None, "steam_id": "1245620", "is_switch2": False},
+    # Switch2専用タイトル
+    {"id": "mariokart_world", "title": "マリオカート ワールド", "maker": "任天堂", "nsuid": "70010000092842", "steam_id": None, "is_switch2": True},
+    {"id": "donkey_kong_bananza", "title": "ドンキーコング バナナーラ", "maker": "任天堂", "nsuid": "70010000096306", "steam_id": None, "is_switch2": True},
+    {"id": "poco_a_pokemon", "title": "ぽこ あ ポケモン", "maker": "任天堂", "nsuid": "70010000107420", "steam_id": None, "is_switch2": True},
+    {"id": "deltarune", "title": "DELTARUNE", "maker": "tobyfox", "nsuid": "70010000096639", "steam_id": None, "is_switch2": True},
 ]
 
 
@@ -149,20 +155,30 @@ def fetch_rakuten_price(url):
         return None
 
 def fetch_and_save_peripherals(existing_peripherals):
-    """周辺機器の価格を取得してperipherals.jsonに保存"""
+    """周辺機器の価格を取得してperipherals.jsonに保存（並列処理）"""
     print("\n【周辺機器価格取得】")
     prev_items = {i["id"]: i for i in existing_peripherals.get("items", [])}
-    items_out = []
-    for p in PERIPHERALS:
-        print(f"  🔍 {p['name']}...", end=" ", flush=True)
+
+    def fetch_one(p):
         price = fetch_rakuten_price(p["url"])
-        if price:
-            print(f"¥{price:,}")
-        else:
+        if not price:
             price = prev_items.get(p["id"], {}).get("price")
-            print(f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗")
-        items_out.append({"id": p["id"], "price": price, "msrp": p.get("msrp")})
-        time.sleep(REQUEST_INTERVAL)
+            status = f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗"
+        else:
+            status = f"¥{price:,}"
+        print(f"  🔍 {p['name']}... {status}")
+        return {"id": p["id"], "price": price, "msrp": p.get("msrp")}
+
+    items_out = []
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = [executor.submit(fetch_one, p) for p in PERIPHERALS]
+        for future in as_completed(futures):
+            items_out.append(future.result())
+
+    # 元の順番に並び替え
+    order = {p["id"]: i for i, p in enumerate(PERIPHERALS)}
+    items_out.sort(key=lambda x: order.get(x["id"], 99))
+
     result = {"last_updated": today_str(), "items": items_out}
     save_json(PERIPHERALS_FILE, result)
     return result
@@ -399,7 +415,7 @@ def fetch_geo_prices():
 
 def main():
     print("=" * 50)
-    print("ゲーセル 価格取得スクリプト v6")
+    print("ゲーセル 価格取得スクリプト v7")
     print(f"実行日時: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 50)
 
@@ -407,58 +423,79 @@ def main():
     today = today_str()
     all_prices = {"last_updated": today, "games": {}}
 
-    print("\n【価格取得開始】")
+    print("\n【価格取得開始（並列処理）】")
+
+    def fetch_game(game):
+        """1タイトル分の価格を取得して返す"""
+        game_id = game["id"]
+        entry = {
+            "id": game_id, "title": game["title"], "maker": game["maker"],
+            "is_switch2": game.get("is_switch2", False),
+            "nsuid": game.get("nsuid"), "steam_id": game.get("steam_id"),
+            "prices": {}
+        }
+        results = []
+        if game.get("nsuid"):
+            data = fetch_eshop_price(game["nsuid"])
+            if data:
+                entry["prices"]["eshop"] = data
+                results.append(("eshop", data))
+        if game.get("steam_id"):
+            data = fetch_steam_price(game["steam_id"])
+            if data:
+                entry["prices"]["steam"] = data
+                results.append(("steam", data))
+        return game_id, entry, results
+
+    # 最大5並列でゲーム価格を取得
+    game_results = {}
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        futures = {executor.submit(fetch_game, g): g for g in GAMES}
+        for future in as_completed(futures):
+            game_id, entry, results = future.result()
+            game_results[game_id] = (entry, results)
+            title = entry["title"]
+            for plat, data in results:
+                icon = "🎮" if plat == "eshop" else "🖥️"
+                if data.get("on_sale"):
+                    print(f"  🔥 {title} [{plat}] ¥{data.get('sale_price')} (-{data.get('discount_pct')}%)")
+                else:
+                    print(f"  📦 {title} [{plat}] ¥{data.get('regular_price','?')} 通常")
+
     eshop_on_sale = 0
     steam_on_sale = 0
 
+    # 順序を保ってall_pricesに格納・history更新
     for game in GAMES:
         game_id = game["id"]
-        print(f"\n  📦 {game['title']}")
-        game_entry = {"id": game_id, "title": game["title"], "maker": game["maker"], "is_switch2": game.get("is_switch2", False), "nsuid": game.get("nsuid"), "steam_id": game.get("steam_id"), "prices": {}}
-
-        if game.get("nsuid"):
-            eshop_data = fetch_eshop_price(game["nsuid"])
-            if eshop_data:
-                game_entry["prices"]["eshop"] = eshop_data
-                history = update_history(history, game_id, "eshop", eshop_data)
-                if eshop_data.get("on_sale"):
-                    eshop_on_sale += 1
-                    print(f"    🎮 eショップ: ¥{eshop_data['sale_price']} (-{eshop_data['discount_pct']}%) 🔥")
-                else:
-                    print(f"    🎮 eショップ: ¥{eshop_data.get('regular_price','?')} 通常価格")
-            time.sleep(REQUEST_INTERVAL)
-
-        if game.get("steam_id"):
-            steam_data = fetch_steam_price(game["steam_id"])
-            if steam_data:
-                game_entry["prices"]["steam"] = steam_data
-                history = update_history(history, game_id, "steam", steam_data)
-                if steam_data.get("on_sale"):
-                    steam_on_sale += 1
-                    print(f"    🖥️ Steam: ¥{steam_data['sale_price']} (-{steam_data['discount_pct']}%) 🔥")
-                else:
-                    print(f"    🖥️ Steam: ¥{steam_data.get('regular_price','?')} 通常価格")
-            time.sleep(REQUEST_INTERVAL)
-
+        if game_id not in game_results:
+            continue
+        entry, results = game_results[game_id]
+        for plat, data in results:
+            history = update_history(history, game_id, plat, data)
+            if data.get("on_sale"):
+                if plat == "eshop": eshop_on_sale += 1
+                else: steam_on_sale += 1
         for platform in ["eshop", "steam"]:
             key = f"{game_id}_{platform}"
-            if key in history and platform in game_entry["prices"]:
-                game_entry["prices"][platform]["all_time_low"] = history[key].get("all_time_low")
-                game_entry["prices"][platform]["all_time_low_date"] = history[key].get("all_time_low_date")
-                game_entry["prices"][platform]["sale_start"] = history[key].get("current_sale_start")
-
-        all_prices["games"][game_id] = game_entry
+            if key in history and platform in entry["prices"]:
+                entry["prices"][platform]["all_time_low"] = history[key].get("all_time_low")
+                entry["prices"][platform]["all_time_low_date"] = history[key].get("all_time_low_date")
+                entry["prices"][platform]["sale_start"] = history[key].get("current_sale_start")
+        all_prices["games"][game_id] = entry
 
     print("\n【データ保存】")
     save_json(PRICES_FILE, all_prices)
     save_json(HISTORY_FILE, history)
 
-    # 周辺機器価格取得
+    # 周辺機器・ゲオは並列で同時取得
+    print("\n【周辺機器・ゲオ 並列取得】")
     existing_peripherals = load_json(PERIPHERALS_FILE) if PERIPHERALS_FILE.exists() else {}
-    fetch_and_save_peripherals(existing_peripherals)
-
-    # ゲオ中古価格取得
-    fetch_geo_prices()
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        f_peri = executor.submit(fetch_and_save_peripherals, existing_peripherals)
+        f_geo  = executor.submit(fetch_geo_prices)
+        f_peri.result()
+        f_geo.result()
 
     print("\n" + "=" * 50)
     print("✅ 完了！")

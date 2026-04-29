@@ -244,6 +244,82 @@
           "fetched_at": "2026-04-29"
         }
       }
+    },
+    "mariokart_world": {
+      "id": "mariokart_world",
+      "title": "マリオカート ワールド",
+      "maker": "任天堂",
+      "is_switch2": true,
+      "nsuid": "70010000092842",
+      "steam_id": null,
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 8980,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-29"
+        }
+      }
+    },
+    "donkey_kong_bananza": {
+      "id": "donkey_kong_bananza",
+      "title": "ドンキーコング バナナーラ",
+      "maker": "任天堂",
+      "is_switch2": true,
+      "nsuid": "70010000096306",
+      "steam_id": null,
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 7980,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-29"
+        }
+      }
+    },
+    "poco_a_pokemon": {
+      "id": "poco_a_pokemon",
+      "title": "ぽこ あ ポケモン",
+      "maker": "任天堂",
+      "is_switch2": true,
+      "nsuid": "70010000107420",
+      "steam_id": null,
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 8980,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-29"
+        }
+      }
+    },
+    "deltarune": {
+      "id": "deltarune",
+      "title": "DELTARUNE",
+      "maker": "tobyfox",
+      "is_switch2": true,
+      "nsuid": "70010000096639",
+      "steam_id": null,
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 3980,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-29"
+        }
+      }
     }
   }
 }

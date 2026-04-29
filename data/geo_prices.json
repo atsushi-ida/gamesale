@@ -4,6 +4,18 @@
   "sale_end": "5月6日",
   "slug": "gwsale",
   "matched_games": {
+    "mariokart_world": {
+      "price": 7128,
+      "geo_title": "マリオカート　ワールド",
+      "category": "",
+      "match_score": 1.0
+    },
+    "poco_a_pokemon": {
+      "price": 6578,
+      "geo_title": "ぽこ　あ　ポケモン",
+      "category": "",
+      "match_score": 1.0
+    },
     "mhrise_sunbreak": {
       "price": 1408,
       "geo_title": "モンスターハンターワイルズ",

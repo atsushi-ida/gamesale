@@ -22,8 +22,8 @@ PERIPHERALS = [
     {"id": "sw2_pro",    "name": "Switch2 プロコントローラー", "msrp": 9980,  "url": "https://item.rakuten.co.jp/book/18210484/"},
     {"id": "sw2_body",   "name": "Nintendo Switch2 本体",      "msrp": 49980, "url": "https://item.rakuten.co.jp/book/18210481/"},
     {"id": "sw_pro",     "name": "Switch プロコントローラー",   "msrp": 7678,  "url": "https://item.rakuten.co.jp/book/14647228/"},
-    {"id": "ds_white",   "name": "DualSense コントローラー 白", "msrp": 9480,  "url": "https://books.rakuten.co.jp/rb/18440638/"},
-    {"id": "ds_black",   "name": "DualSense コントローラー 黒", "msrp": 9480,  "url": "https://books.rakuten.co.jp/rb/18440639/"},
+    {"id": "ds_white",   "name": "DualSense コントローラー 白", "msrp": 11480, "url": "https://books.rakuten.co.jp/rb/18440638/"},
+    {"id": "ds_black",   "name": "DualSense コントローラー 黒", "msrp": 11480, "url": "https://books.rakuten.co.jp/rb/18440639/"},
     {"id": "samsung512", "name": "Samsung microSDXpress 512GB", "msrp": 19980, "url": "https://item.rakuten.co.jp/itgm/4560441099989/"},
     {"id": "sandisk256", "name": "SanDisk microSDExpress 256GB","msrp": 8980,  "url": "https://books.rakuten.co.jp/rb/18210486/"},
 ]
@@ -45,10 +45,18 @@ GAMES = [
     {"id": "sekiro", "title": "SEKIRO: SHADOWS DIE TWICE", "maker": "フロムソフトウェア", "nsuid": None, "steam_id": "814380", "is_switch2": False},
     {"id": "elden_ring", "title": "ELDEN RING", "maker": "フロムソフトウェア", "nsuid": None, "steam_id": "1245620", "is_switch2": False},
     # Switch2専用タイトル
-    {"id": "mariokart_world", "title": "マリオカート ワールド", "maker": "任天堂", "nsuid": "70010000092842", "steam_id": None, "is_switch2": True},
-    {"id": "donkey_kong_bananza", "title": "ドンキーコング バナンザ", "maker": "任天堂", "nsuid": "70010000096306", "steam_id": None, "is_switch2": True},
-    {"id": "poco_a_pokemon", "title": "ぽこ あ ポケモン", "maker": "任天堂", "nsuid": "70010000107420", "steam_id": None, "is_switch2": True},
-    {"id": "deltarune", "title": "DELTARUNE", "maker": "tobyfox", "nsuid": "70010000096639", "steam_id": None, "is_switch2": True},
+    {"id": "mariokart_world",      "title": "マリオカート ワールド",                                        "maker": "任天堂",           "nsuid": "70010000092842", "steam_id": None, "is_switch2": True},
+    {"id": "donkey_kong_bananza",  "title": "ドンキーコング バナンザ",                                       "maker": "任天堂",           "nsuid": "70010000096306", "steam_id": None, "is_switch2": True},
+    {"id": "poco_a_pokemon",       "title": "ぽこ あ ポケモン",                                             "maker": "任天堂",           "nsuid": "70010000107420", "steam_id": None, "is_switch2": True},
+    {"id": "deltarune",            "title": "DELTARUNE",                                                   "maker": "tobyfox",          "nsuid": "70010000096639", "steam_id": None, "is_switch2": True},
+    {"id": "split_fiction",        "title": "スプリット・フィクション",                                      "maker": "EA",               "nsuid": "70010000096944", "steam_id": "2001120", "is_switch2": True},
+    {"id": "sw2_himitsu",          "title": "Nintendo Switch 2 のひみつ展",                                 "maker": "任天堂",           "nsuid": "70010000096305", "steam_id": None, "is_switch2": True},
+    {"id": "mario_party_jamboree", "title": "スーパーマリオパーティ ジャンボリー Nintendo Switch 2 Edition", "maker": "任天堂",           "nsuid": "70010000013977", "steam_id": None, "is_switch2": True},
+    {"id": "duskbloods",           "title": "The Duskbloods",                                              "maker": "フロムソフトウェア", "nsuid": "70010000096715", "steam_id": None, "is_switch2": True},
+    {"id": "splatoon_raiders",     "title": "スプラトゥーン レイダース",                                     "maker": "任天堂",           "nsuid": "70010000122823", "steam_id": None, "is_switch2": True},
+    {"id": "fantasy_life_i_sw2",   "title": "ファンタジーライフ i グルグルの竜と時をぬすむ少女 SW2 Edition", "maker": "レベルファイブ",    "nsuid": "70010000098486", "steam_id": None, "is_switch2": True},
+    {"id": "pokemon_za_sw2",       "title": "Pokémon LEGENDS Z-A Nintendo Switch 2 Edition",               "maker": "ゲームフリーク",    "nsuid": "70010000099190", "steam_id": None, "is_switch2": True},
+    {"id": "kirby_air_riders",     "title": "カービィのエアライダー",                                        "maker": "任天堂",           "nsuid": "70010000103774", "steam_id": None, "is_switch2": True},
 ]
 
 
@@ -117,7 +125,16 @@ def fetch_rakuten_price(url):
                         return price
             return None
 
-        # item.rakuten.co.jp: JSON-LDが信頼できる
+        # item.rakuten.co.jp: class="price"で取得
+        for el in soup.find_all(class_="price"):
+            text = el.get_text(strip=True)
+            m = _re.search(r"([\d,]{4,})円", text)
+            if m:
+                price = int(m.group(1).replace(",", ""))
+                if 1000 <= price <= 300000:
+                    return price
+
+        # itgm等サードパーティショップ用フォールバック（JSON-LD）
         for s in soup.find_all("script", type="application/ld+json"):
             try:
                 d = json.loads(s.string or "")
@@ -132,22 +149,14 @@ def fetch_rakuten_price(url):
             except Exception:
                 pass
 
-        # item.rakuten.co.jp 専用セレクタ
-        for sel in [
-            "span.price--OKm9j",
-            ".price--OKm9j",
-            "[class*='price__main']",
-            "[class*='ItemPrice']",
-            ".item-price",
-        ]:
-            el = soup.select_one(sel)
-            if el:
-                text = el.get_text(strip=True)
-                m = _re.search(r"[\d,]{4,}", text)
-                if m:
-                    price = int(m.group(0).replace(",", ""))
-                    if 1000 <= price <= 300000:
-                        return price
+        # 全体から価格パターンを探す（最終フォールバック）
+        for el in soup.find_all(["span","div","p"], class_=_re.compile(r"price|Price|yen|cost", _re.I)):
+            text = el.get_text(strip=True)
+            m = _re.search(r"([\d,]{4,})円", text)
+            if m:
+                price = int(m.group(1).replace(",", ""))
+                if 1000 <= price <= 300000:
+                    return price
 
         return None
     except Exception as e:
@@ -155,20 +164,25 @@ def fetch_rakuten_price(url):
         return None
 
 def fetch_and_save_peripherals(existing_peripherals):
-    """周辺機器の価格を取得してperipherals.jsonに保存"""
+    """周辺機器の価格を取得してperipherals.jsonに保存（並列処理）"""
     print("\n【周辺機器価格取得】")
     prev_items = {i["id"]: i for i in existing_peripherals.get("items", [])}
+
+    def fetch_one(p):
+        price = fetch_rakuten_price(p["url"])
+        if not price:
+            price = prev_items.get(p["id"], {}).get("price")
+            status = f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗"
+        else:
+            status = f"¥{price:,}"
+        print(f"  🔍 {p['name']}... {status}")
+        return {"id": p["id"], "price": price, "msrp": p.get("msrp")}
+
     items_out = []
     for p in PERIPHERALS:
-        print(f"  🔍 {p['name']}...", end=" ", flush=True)
-        price = fetch_rakuten_price(p["url"])
-        if price:
-            print(f"¥{price:,}")
-        else:
-            price = prev_items.get(p["id"], {}).get("price")
-            print(f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗")
-        items_out.append({"id": p["id"], "price": price, "msrp": p.get("msrp")})
-        time.sleep(REQUEST_INTERVAL)
+        result = fetch_one(p)
+        items_out.append(result)
+
     result = {"last_updated": today_str(), "items": items_out}
     save_json(PERIPHERALS_FILE, result)
     return result
@@ -259,19 +273,22 @@ def normalize_title(title):
 def match_geo_to_games(geo_items, games_list):
     """ゲオのゲームタイトルをGAMESリストに照合"""
     from difflib import SequenceMatcher
-    matched = {}  # game_id -> {price, geo_title, category}
+    # デジタル専用・未発売・周辺機器と混同しやすいIDは除外
+    EXCLUDE_IDS = {"sw2_himitsu", "duskbloods", "splatoon_raiders"}
+    matched = {}
     for geo in geo_items:
         geo_norm = normalize_title(geo["title"])
         best_score = 0
         best_id = None
         for game in games_list:
+            if game["id"] in EXCLUDE_IDS:
+                continue
             game_norm = normalize_title(game["title"])
             score = SequenceMatcher(None, geo_norm, game_norm).ratio()
             if score > best_score:
                 best_score = score
                 best_id = game["id"]
-        if best_score >= 0.6 and best_id:
-            # 既存より安ければ更新
+        if best_score >= 0.75 and best_id:
             if best_id not in matched or geo["price"] < matched[best_id]["price"]:
                 matched[best_id] = {
                     "price": geo["price"],

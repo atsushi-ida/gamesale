@@ -16,6 +16,7 @@
           "sale_price": 1535,
           "discount_pct": 80,
           "sale_end": "2026-05-18",
+          "sale_name": null,
           "currency": "JPY",
           "fetched_at": "2026-04-29",
           "all_time_low": 1535,
@@ -28,6 +29,7 @@
           "regular_price": 7678,
           "sale_price": 1535,
           "discount_pct": 80,
+          "sale_name": "Steam セール -80%",
           "currency": "JPY",
           "fetched_at": "2026-04-29",
           "all_time_low": 1535,
@@ -59,6 +61,7 @@
           "regular_price": 3990,
           "sale_price": null,
           "discount_pct": 0,
+          "sale_name": null,
           "currency": "JPY",
           "fetched_at": "2026-04-29"
         }
@@ -87,6 +90,7 @@
           "regular_price": 3960,
           "sale_price": 594,
           "discount_pct": 85,
+          "sale_name": "Steam セール -85%",
           "currency": "JPY",
           "fetched_at": "2026-04-29",
           "all_time_low": 594,
@@ -128,6 +132,7 @@
           "regular_price": 3990,
           "sale_price": null,
           "discount_pct": 0,
+          "sale_name": null,
           "currency": "JPY",
           "fetched_at": "2026-04-29"
         }
@@ -148,6 +153,7 @@
           "sale_price": 3120,
           "discount_pct": 60,
           "sale_end": "2026-05-06",
+          "sale_name": null,
           "currency": "JPY",
           "fetched_at": "2026-04-29",
           "all_time_low": 3120,
@@ -170,6 +176,7 @@
           "regular_price": 3990,
           "sale_price": null,
           "discount_pct": 0,
+          "sale_name": null,
           "currency": "JPY",
           "fetched_at": "2026-04-29"
         }
@@ -189,6 +196,7 @@
           "regular_price": 8360,
           "sale_price": 4180,
           "discount_pct": 50,
+          "sale_name": "Steam セール -50%",
           "currency": "JPY",
           "fetched_at": "2026-04-29",
           "all_time_low": 4180,
@@ -211,6 +219,7 @@
           "regular_price": 8360,
           "sale_price": null,
           "discount_pct": 0,
+          "sale_name": null,
           "currency": "JPY",
           "fetched_at": "2026-04-29"
         }
@@ -230,6 +239,7 @@
           "regular_price": 9020,
           "sale_price": null,
           "discount_pct": 0,
+          "sale_name": null,
           "currency": "JPY",
           "fetched_at": "2026-04-29"
         }

@@ -100,34 +100,15 @@ def fetch_rakuten_price(url):
         is_books = "books.rakuten.co.jp" in url
 
         if is_books:
-            # books.rakuten: 実売価格は大きな赤い数字。参考小売価格(取消線)は除外
-            # 取消線テキストを除去してから探す
-            for strike in soup.find_all(["s", "del", "strike"]):
-                strike.decompose()
-            # 「円（税込）」直前の数字を探す
-            price_text = soup.get_text()
-            m = _re.search(r"([\d,]{4,})円(?:\s*（税込）|\s*\(税込\))", price_text)
-            if m:
-                price = int(m.group(1).replace(",", ""))
-                if 1000 <= price <= 300000:
-                    return price
-            # セレクタで探す（取消線除去済み）
-            for sel in [
-                ".rkb-price__main-price",
-                ".rkb-price__selling-price",
-                "span.selling-price",
-                "[class*='selling']",
-                ".bk-price",
-                "[class*='price']",
-            ]:
-                el = soup.select_one(sel)
-                if el:
-                    text = el.get_text(strip=True)
-                    m = _re.search(r"([\d,]{4,})円", text)
-                    if m:
-                        price = int(m.group(1).replace(",", ""))
-                        if 1000 <= price <= 300000:
-                            return price
+            # books.rakuten: class="price"の最初の要素が実売価格
+            # class="strikethru"は参考小売価格なので除外
+            for el in soup.find_all(class_="price"):
+                text = el.get_text(strip=True)
+                m = _re.search(r"([\d,]{4,})", text)
+                if m:
+                    price = int(m.group(1).replace(",", ""))
+                    if 1000 <= price <= 300000:
+                        return price
             return None
 
         # item.rakuten.co.jp: JSON-LDが信頼できる

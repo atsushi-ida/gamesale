@@ -3,31 +3,38 @@
   "items": [
     {
       "id": "sw2_pro",
-      "price": 9980
+      "price": 9980,
+      "msrp": 9980
     },
     {
       "id": "sw2_body",
-      "price": 49979
+      "price": 49979,
+      "msrp": 49980
     },
     {
       "id": "sw_pro",
-      "price": 7678
+      "price": 7678,
+      "msrp": 7678
     },
     {
       "id": "ds_white",
-      "price": 11479
+      "price": 11016,
+      "msrp": 9480
     },
     {
       "id": "ds_black",
-      "price": 11479
+      "price": 11121,
+      "msrp": 9480
     },
     {
       "id": "samsung512",
-      "price": 19980
+      "price": 19980,
+      "msrp": 19980
     },
     {
       "id": "sandisk256",
-      "price": 6979
+      "price": 6560,
+      "msrp": 8980
     }
   ]
 }

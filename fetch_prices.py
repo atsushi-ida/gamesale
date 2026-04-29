@@ -7,12 +7,25 @@ import json
 import time
 import datetime
 import requests
+from bs4 import BeautifulSoup
 from pathlib import Path
 
 DATA_DIR = Path("data")
 PRICES_FILE = DATA_DIR / "prices.json"
 HISTORY_FILE = DATA_DIR / "history.json"
+PERIPHERALS_FILE = DATA_DIR / "peripherals.json"
 REQUEST_INTERVAL = 1.5
+
+# 周辺機器リスト（楽天商品ページのshop/item）
+PERIPHERALS = [
+    {"id": "sw2_pro",    "name": "Switch2 プロコントローラー", "shop": "book",  "item": "18210484"},
+    {"id": "sw2_body",   "name": "Nintendo Switch2 本体",      "shop": "book",  "item": "18210481"},
+    {"id": "sw_pro",     "name": "Switch プロコントローラー",   "shop": "book",  "item": "14647228"},
+    {"id": "ds_white",   "name": "DualSense コントローラー 白", "shop": "book",  "item": "18440638"},
+    {"id": "ds_black",   "name": "DualSense コントローラー 黒", "shop": "book",  "item": "18440639"},
+    {"id": "samsung512", "name": "Samsung microSDXpress 512GB", "shop": "itgm",  "item": "4560441099989"},
+    {"id": "sandisk256", "name": "SanDisk microSDExpress 256GB","shop": "book",  "item": "18210486"},
+]
 
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
@@ -50,6 +63,10 @@ def save_json(filepath, data):
 
 def update_history(history, game_id, platform, price_data):
     if not price_data or not price_data.get("on_sale"):
+        # セール終了 → sale_start をリセット
+        key = f"{game_id}_{platform}"
+        if key in history:
+            history[key].pop("current_sale_start", None)
         return history
     key = f"{game_id}_{platform}"
     if key not in history:
@@ -59,6 +76,9 @@ def update_history(history, game_id, platform, price_data):
         return history
     entry = history[key]
     today = today_str()
+    # セール開始日の追跡
+    if "current_sale_start" not in entry:
+        entry["current_sale_start"] = today
     if entry["all_time_low"] is None or current < entry["all_time_low"]:
         entry["all_time_low"] = current
         entry["all_time_low_date"] = today
@@ -68,6 +88,70 @@ def update_history(history, game_id, platform, price_data):
         entry["records"].append({"date": today, "sale_price": current, "regular_price": price_data.get("regular_price"), "discount_pct": price_data.get("discount_pct")})
         entry["records"] = sorted(entry["records"], key=lambda x: x["date"])[-365:]
     return history
+
+def fetch_rakuten_price(shop, item):
+    """楽天商品ページから価格をスクレイピング"""
+    url = f"https://item.rakuten.co.jp/{shop}/{item}/"
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        # 楽天の価格要素を複数パターンで探す
+        selectors = [
+            "span.price--OKm9j",
+            "[class*='price__'] span",
+            ".price-checkout",
+            "span[class*='price']",
+            ".item-price",
+            "#priceCalculationConfig",  # JSON埋め込みの場合
+        ]
+        for sel in selectors:
+            el = soup.select_one(sel)
+            if el:
+                text = el.get_text(strip=True).replace(",", "").replace("円", "").replace("¥", "").replace("税込", "").strip()
+                # 数値のみ抽出
+                import re
+                m = re.search(r"(\d{3,6})", text)
+                if m:
+                    price = int(m.group(1))
+                    if 1000 <= price <= 200000:
+                        return price
+        # JSON-LDから価格を取得
+        import re
+        scripts = soup.find_all("script", type="application/ld+json")
+        for s in scripts:
+            try:
+                d = json.loads(s.string)
+                if isinstance(d, dict) and "offers" in d:
+                    p = d["offers"].get("price") or d["offers"].get("lowPrice")
+                    if p:
+                        return int(float(p))
+            except Exception:
+                pass
+        return None
+    except Exception as e:
+        print(f"    ⚠ 楽天スクレイプエラー ({shop}/{item}): {e}")
+        return None
+
+def fetch_and_save_peripherals(existing_peripherals):
+    """周辺機器の価格を取得してperipherals.jsonに保存"""
+    print("\n【周辺機器価格取得】")
+    prev_items = {i["id"]: i for i in existing_peripherals.get("items", [])}
+    items_out = []
+    for p in PERIPHERALS:
+        print(f"  🔍 {p['name']}...", end=" ", flush=True)
+        price = fetch_rakuten_price(p["shop"], p["item"])
+        if price:
+            print(f"¥{price:,}")
+        else:
+            # 前回の価格を引き継ぐ
+            price = prev_items.get(p["id"], {}).get("price")
+            print(f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗")
+        items_out.append({"id": p["id"], "price": price})
+        time.sleep(REQUEST_INTERVAL)
+    result = {"last_updated": today_str(), "items": items_out}
+    save_json(PERIPHERALS_FILE, result)
+    return result
 
 def fetch_eshop_price(nsuid):
     url = "https://api.ec.nintendo.com/v1/price"
@@ -167,12 +251,17 @@ def main():
             if key in history and platform in game_entry["prices"]:
                 game_entry["prices"][platform]["all_time_low"] = history[key].get("all_time_low")
                 game_entry["prices"][platform]["all_time_low_date"] = history[key].get("all_time_low_date")
+                game_entry["prices"][platform]["sale_start"] = history[key].get("current_sale_start")
 
         all_prices["games"][game_id] = game_entry
 
     print("\n【データ保存】")
     save_json(PRICES_FILE, all_prices)
     save_json(HISTORY_FILE, history)
+
+    # 周辺機器価格取得
+    existing_peripherals = load_json(PERIPHERALS_FILE) if PERIPHERALS_FILE.exists() else {}
+    fetch_and_save_peripherals(existing_peripherals)
 
     print("\n" + "=" * 50)
     print("✅ 完了！")

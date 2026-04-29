@@ -253,17 +253,17 @@ header{position:sticky;top:0;z-index:300;background:rgba(7,9,15,.96);backdrop-fi
 .cal-day{font-size:10px;text-align:center;padding:4px 2px;border-radius:4px;cursor:default;position:relative;min-height:26px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px}
 .cal-day.empty{opacity:0}
 .cal-day.today{background:var(--surface3);border:1px solid var(--border2);font-weight:700;color:var(--text)}
-.cal-day.has-end{background:rgba(255,61,90,.12);border:1px solid rgba(255,61,90,.25);color:var(--accent);cursor:pointer;font-weight:700}
-.cal-day.has-end:hover{background:rgba(255,61,90,.22)}
-.cal-dot{width:4px;height:4px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.cal-day.has-end{background:rgba(255,61,90,.18);border:1px solid rgba(255,61,90,.4);color:var(--accent);cursor:pointer;font-weight:700}
+.cal-day.in-range{background:rgba(255,193,7,.08);border:1px solid rgba(255,193,7,.18);color:var(--accent2)}
+.cal-day.has-start{background:rgba(0,230,118,.12);border:1px solid rgba(0,230,118,.3);color:var(--accent3);font-weight:700}
+.cal-day.has-start.has-end{background:rgba(255,61,90,.18);border-color:rgba(255,61,90,.4);color:var(--accent)}
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
 .cal-nav-btn{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text3);cursor:pointer;font-size:11px;padding:2px 7px;transition:all .15s}
 .cal-nav-btn:hover{color:var(--text);border-color:var(--border2)}
 .cal-month{font-size:11px;font-weight:700;color:var(--text2)}
-.cal-tooltip{font-size:9px;color:var(--accent2);line-height:1.2;max-width:80px;word-break:break-all;display:none}
-.cal-day.has-end:hover .cal-tooltip{display:block}
-.cal-legend{font-size:9px;color:var(--text3);margin-top:6px;display:flex;align-items:center;gap:4px}
-.cal-legend-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.cal-legend{font-size:9px;color:var(--text3);margin-top:6px;display:flex;flex-wrap:wrap;gap:5px}
+.cal-legend-item{display:flex;align-items:center;gap:3px}
+.cal-legend-dot{width:7px;height:7px;border-radius:2px}
 /* 周辺機器価格 */
 .peri-price{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--accent2);flex-shrink:0}
 .peri-loading{font-size:10px;color:var(--text3)}
@@ -402,7 +402,11 @@ footer{border-top:1px solid var(--border);padding:20px;text-align:center;font-si
           <button class="cal-nav-btn" onclick="calNext()">▶</button>
         </div>
         <div class="cal-grid" id="calGrid"></div>
-        <div class="cal-legend"><span class="cal-legend-dot"></span> セール終了日</div>
+        <div class="cal-legend">
+          <span class="cal-legend-item"><span class="cal-legend-dot" style="background:rgba(0,230,118,.6)"></span>開始</span>
+          <span class="cal-legend-item"><span class="cal-legend-dot" style="background:rgba(255,193,7,.5)"></span>期間中</span>
+          <span class="cal-legend-item"><span class="cal-legend-dot" style="background:rgba(255,61,90,.6)"></span>終了</span>
+        </div>
       </div>
     </div>
 
@@ -554,27 +558,51 @@ let calYear = new Date().getFullYear();
 let calMonth = new Date().getMonth();
 
 function renderCalendar() {
-  if (!priceData) return;
+  if (!priceData) { renderCalendarEmpty(); return; }
   const games = priceData.games || {};
-  // セール終了日をマップ { 'YYYY-MM-DD': ['タイトル1', ...] }
-  const endMap = {};
+
+  // セール期間マップ { 'YYYY-MM-DD': { starts:[title], ends:[title], inRange:[title] } }
+  const dayMap = {};
+  const mark = (date, type, title) => {
+    if (!date) return;
+    if (!dayMap[date]) dayMap[date] = { starts:[], ends:[], inRange:[] };
+    if (!dayMap[date][type].includes(title)) dayMap[date][type].push(title);
+  };
+
   for (const [, game] of Object.entries(games)) {
     for (const pdata of Object.values(game.prices || {})) {
-      if (pdata.sale_end && pdata.on_sale) {
-        if (!endMap[pdata.sale_end]) endMap[pdata.sale_end] = [];
-        const t = game.title;
-        if (!endMap[pdata.sale_end].includes(t)) endMap[pdata.sale_end].push(t);
+      if (!pdata.on_sale) continue;
+      const title = game.title;
+      const start = pdata.sale_start;
+      const end   = pdata.sale_end;
+      if (start) mark(start, 'starts', title);
+      if (end)   mark(end,   'ends',   title);
+      // 期間中の日をマーク
+      if (start && end) {
+        let cur = new Date(start);
+        const endD = new Date(end);
+        cur.setDate(cur.getDate() + 1);
+        while (cur < endD) {
+          mark(cur.toISOString().slice(0,10), 'inRange', title);
+          cur.setDate(cur.getDate() + 1);
+        }
       }
     }
   }
 
+  renderCalendarGrid(dayMap);
+}
+
+function renderCalendarEmpty() {
+  renderCalendarGrid({});
+}
+
+function renderCalendarGrid(dayMap) {
   const label = document.getElementById('calMonthLabel');
   label.textContent = `${calYear}年${calMonth+1}月`;
-
   const grid = document.getElementById('calGrid');
   grid.innerHTML = '';
 
-  // 曜日ヘッダー
   ['日','月','火','水','木','金','土'].forEach(d => {
     const h = document.createElement('div');
     h.className = 'cal-head';
@@ -587,22 +615,30 @@ function renderCalendar() {
   const today = new Date().toISOString().slice(0,10);
 
   for (let i=0; i<firstDay; i++) {
-    const empty = document.createElement('div');
-    empty.className = 'cal-day empty';
-    grid.appendChild(empty);
+    const e = document.createElement('div');
+    e.className = 'cal-day empty';
+    grid.appendChild(e);
   }
 
   for (let d=1; d<=daysInMonth; d++) {
-    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const ds = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const info = dayMap[ds] || {};
     const div = document.createElement('div');
-    div.className = 'cal-day' + (dateStr === today ? ' today' : '') + (endMap[dateStr] ? ' has-end' : '');
+    const classes = ['cal-day'];
+    if (ds === today) classes.push('today');
+    if (info.starts?.length) classes.push('has-start');
+    if (info.inRange?.length) classes.push('in-range');
+    if (info.ends?.length)   classes.push('has-end');
+    div.className = classes.join(' ');
     div.textContent = d;
-    if (endMap[dateStr]) {
-      const dot = document.createElement('div');
-      dot.className = 'cal-dot';
-      div.appendChild(dot);
-      div.title = endMap[dateStr].join(', ') + ' のセール終了';
-    }
+
+    // tooltip
+    const tips = [];
+    if (info.starts?.length) tips.push('🟢開始: ' + info.starts.join(', '));
+    if (info.inRange?.length) tips.push('🟡期間中: ' + info.inRange.join(', '));
+    if (info.ends?.length)   tips.push('🔴終了: ' + info.ends.join(', '));
+    if (tips.length) div.title = tips.join('\n');
+
     grid.appendChild(div);
   }
 }
@@ -1112,7 +1148,7 @@ document.getElementById('notifModal').addEventListener('click', function(e) {
 // ===== 起動 =====
 loadData();
 loadPeripherals();
-renderCalendar(); // 初期表示（データなしでも月グリッドを表示）
+renderCalendarEmpty(); // 初期表示（データなしでも月グリッドを表示）
 </script>
 </body>
 </html>

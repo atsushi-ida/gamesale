@@ -1,0 +1,277 @@
+"""
+ゲーセル - 価格データ取得スクリプト v6
+オクトパストラベラー2 nsuid追加
+"""
+
+import json
+import time
+import datetime
+import requests
+from bs4 import BeautifulSoup
+from pathlib import Path
+
+DATA_DIR = Path("data")
+PRICES_FILE = DATA_DIR / "prices.json"
+HISTORY_FILE = DATA_DIR / "history.json"
+PERIPHERALS_FILE = DATA_DIR / "peripherals.json"
+REQUEST_INTERVAL = 1.5
+
+# 周辺機器リスト（楽天商品ページのshop/item）
+PERIPHERALS = [
+    {"id": "sw2_pro",    "name": "Switch2 プロコントローラー", "shop": "book",  "item": "18210484"},
+    {"id": "sw2_body",   "name": "Nintendo Switch2 本体",      "shop": "book",  "item": "18210481"},
+    {"id": "sw_pro",     "name": "Switch プロコントローラー",   "shop": "book",  "item": "14647228"},
+    {"id": "ds_white",   "name": "DualSense コントローラー 白", "shop": "book",  "item": "18440638"},
+    {"id": "ds_black",   "name": "DualSense コントローラー 黒", "shop": "book",  "item": "18440639"},
+    {"id": "samsung512", "name": "Samsung microSDXpress 512GB", "shop": "itgm",  "item": "4560441099989"},
+    {"id": "sandisk256", "name": "SanDisk microSDExpress 256GB","shop": "book",  "item": "18210486"},
+]
+
+HEADERS = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Accept-Language": "ja-JP,ja;q=0.9",
+}
+
+GAMES = [
+    {"id": "persona5_royal", "title": "ペルソナ5 ザ・ロイヤル", "maker": "アトラス", "nsuid": "70010000042356", "steam_id": "1687950", "is_switch2": False},
+    {"id": "mhrise_sunbreak", "title": "モンスターハンターライズ：サンブレイク セット", "maker": "カプコン", "nsuid": "70070000013655", "steam_id": "1446780", "is_switch2": False},
+    {"id": "dq11s", "title": "ドラゴンクエストXI S 過ぎ去りし時を求めて S", "maker": "スクウェア・エニックス", "nsuid": "70070000006461", "steam_id": "860510", "is_switch2": False},
+    {"id": "xenoblade3", "title": "ゼノブレイド3", "maker": "任天堂", "nsuid": "70010000053335", "steam_id": None, "is_switch2": False},
+    {"id": "biohazard_village", "title": "バイオハザード ヴィレッジ", "maker": "カプコン", "nsuid": None, "steam_id": "1196590", "is_switch2": False},
+    {"id": "octopath2", "title": "オクトパストラベラー2", "maker": "スクウェア・エニックス", "nsuid": "70010000058127", "steam_id": "1993360", "is_switch2": False},
+    {"id": "guilty_gear_strive", "title": "GUILTY GEAR -STRIVE-", "maker": "アークシステムワークス", "nsuid": None, "steam_id": "1384160", "is_switch2": False},
+    {"id": "lies_of_p", "title": "Lies of P", "maker": "NEOWIZ", "nsuid": None, "steam_id": "1627720", "is_switch2": False},
+    {"id": "sekiro", "title": "SEKIRO: SHADOWS DIE TWICE", "maker": "フロムソフトウェア", "nsuid": None, "steam_id": "814380", "is_switch2": False},
+    {"id": "elden_ring", "title": "ELDEN RING", "maker": "フロムソフトウェア", "nsuid": None, "steam_id": "1245620", "is_switch2": False},
+]
+
+
+def today_str():
+    return datetime.date.today().isoformat()
+
+def load_json(filepath):
+    if filepath.exists():
+        with open(filepath, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+def save_json(filepath, data):
+    filepath.parent.mkdir(parents=True, exist_ok=True)
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    print(f"  ✓ 保存: {filepath}")
+
+def update_history(history, game_id, platform, price_data):
+    if not price_data or not price_data.get("on_sale"):
+        # セール終了 → sale_start をリセット
+        key = f"{game_id}_{platform}"
+        if key in history:
+            history[key].pop("current_sale_start", None)
+        return history
+    key = f"{game_id}_{platform}"
+    if key not in history:
+        history[key] = {"game_id": game_id, "platform": platform, "all_time_low": None, "all_time_low_date": None, "records": []}
+    current = price_data.get("sale_price")
+    if not current:
+        return history
+    entry = history[key]
+    today = today_str()
+    # セール開始日の追跡
+    if "current_sale_start" not in entry:
+        entry["current_sale_start"] = today
+    if entry["all_time_low"] is None or current < entry["all_time_low"]:
+        entry["all_time_low"] = current
+        entry["all_time_low_date"] = today
+        print(f"    🏆 過去最安値更新！ {game_id} [{platform}]: ¥{current}")
+    existing = [r["date"] for r in entry["records"]]
+    if today not in existing:
+        entry["records"].append({"date": today, "sale_price": current, "regular_price": price_data.get("regular_price"), "discount_pct": price_data.get("discount_pct")})
+        entry["records"] = sorted(entry["records"], key=lambda x: x["date"])[-365:]
+    return history
+
+def fetch_rakuten_price(shop, item):
+    """楽天商品ページから価格をスクレイピング"""
+    url = f"https://item.rakuten.co.jp/{shop}/{item}/"
+    try:
+        resp = requests.get(url, headers=HEADERS, timeout=15)
+        resp.raise_for_status()
+        soup = BeautifulSoup(resp.text, "html.parser")
+        # 楽天の価格要素を複数パターンで探す
+        selectors = [
+            "span.price--OKm9j",
+            "[class*='price__'] span",
+            ".price-checkout",
+            "span[class*='price']",
+            ".item-price",
+            "#priceCalculationConfig",  # JSON埋め込みの場合
+        ]
+        for sel in selectors:
+            el = soup.select_one(sel)
+            if el:
+                text = el.get_text(strip=True).replace(",", "").replace("円", "").replace("¥", "").replace("税込", "").strip()
+                # 数値のみ抽出
+                import re
+                m = re.search(r"(\d{3,6})", text)
+                if m:
+                    price = int(m.group(1))
+                    if 1000 <= price <= 200000:
+                        return price
+        # JSON-LDから価格を取得
+        import re
+        scripts = soup.find_all("script", type="application/ld+json")
+        for s in scripts:
+            try:
+                d = json.loads(s.string)
+                if isinstance(d, dict) and "offers" in d:
+                    p = d["offers"].get("price") or d["offers"].get("lowPrice")
+                    if p:
+                        return int(float(p))
+            except Exception:
+                pass
+        return None
+    except Exception as e:
+        print(f"    ⚠ 楽天スクレイプエラー ({shop}/{item}): {e}")
+        return None
+
+def fetch_and_save_peripherals(existing_peripherals):
+    """周辺機器の価格を取得してperipherals.jsonに保存"""
+    print("\n【周辺機器価格取得】")
+    prev_items = {i["id"]: i for i in existing_peripherals.get("items", [])}
+    items_out = []
+    for p in PERIPHERALS:
+        print(f"  🔍 {p['name']}...", end=" ", flush=True)
+        price = fetch_rakuten_price(p["shop"], p["item"])
+        if price:
+            print(f"¥{price:,}")
+        else:
+            # 前回の価格を引き継ぐ
+            price = prev_items.get(p["id"], {}).get("price")
+            print(f"取得失敗（前回値: ¥{price:,}）" if price else "取得失敗")
+        items_out.append({"id": p["id"], "price": price})
+        time.sleep(REQUEST_INTERVAL)
+    result = {"last_updated": today_str(), "items": items_out}
+    save_json(PERIPHERALS_FILE, result)
+    return result
+
+def fetch_eshop_price(nsuid):
+    url = "https://api.ec.nintendo.com/v1/price"
+    params = {"country": "JP", "lang": "ja", "ids": nsuid}
+    try:
+        resp = requests.get(url, params=params, headers=HEADERS, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+        prices = data.get("prices", [])
+        if not prices:
+            return None
+        price_info = prices[0]
+        status = price_info.get("sales_status", "")
+        if status == "not_found":
+            return {"status": "not_found", "on_sale": False}
+        regular = price_info.get("regular_price", {})
+        discount = price_info.get("discount_price", {})
+        reg_val = int(regular.get("raw_value", 0))
+        if discount and status == "onsale":
+            disc_val = int(discount.get("raw_value", 0))
+            disc_pct = round((1 - disc_val / reg_val) * 100) if reg_val > 0 else 0
+            end_date = discount.get("end_datetime", "")
+            return {"status": "on_sale", "on_sale": True, "regular_price": reg_val, "sale_price": disc_val, "discount_pct": disc_pct, "sale_end": end_date[:10] if end_date else None, "currency": "JPY", "fetched_at": today_str()}
+        else:
+            return {"status": "not_on_sale", "on_sale": False, "regular_price": reg_val, "sale_price": None, "discount_pct": 0, "currency": "JPY", "fetched_at": today_str()}
+    except Exception as e:
+        print(f"    ⚠ eショップエラー: {e}")
+        return None
+
+def fetch_steam_price(steam_id):
+    url = "https://store.steampowered.com/api/appdetails"
+    params = {"appids": steam_id, "cc": "jp", "l": "japanese"}
+    try:
+        resp = requests.get(url, params=params, headers=HEADERS, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+        app_data = data.get(str(steam_id), {})
+        if not app_data.get("success"):
+            return None
+        game_data = app_data.get("data", {})
+        price_overview = game_data.get("price_overview")
+        if not price_overview:
+            return None
+        regular_price = price_overview.get("initial", 0) // 100
+        sale_price = price_overview.get("final", 0) // 100
+        discount_pct = price_overview.get("discount_percent", 0)
+        return {"status": "on_sale" if discount_pct > 0 else "not_on_sale", "on_sale": discount_pct > 0, "regular_price": regular_price, "sale_price": sale_price if discount_pct > 0 else None, "discount_pct": discount_pct, "currency": "JPY", "fetched_at": today_str()}
+    except Exception as e:
+        print(f"    ⚠ Steamエラー: {e}")
+        return None
+
+def main():
+    print("=" * 50)
+    print("ゲーセル 価格取得スクリプト v6")
+    print(f"実行日時: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print("=" * 50)
+
+    history = load_json(HISTORY_FILE)
+    today = today_str()
+    all_prices = {"last_updated": today, "games": {}}
+
+    print("\n【価格取得開始】")
+    eshop_on_sale = 0
+    steam_on_sale = 0
+
+    for game in GAMES:
+        game_id = game["id"]
+        print(f"\n  📦 {game['title']}")
+        game_entry = {"id": game_id, "title": game["title"], "maker": game["maker"], "is_switch2": game.get("is_switch2", False), "nsuid": game.get("nsuid"), "steam_id": game.get("steam_id"), "prices": {}}
+
+        if game.get("nsuid"):
+            eshop_data = fetch_eshop_price(game["nsuid"])
+            if eshop_data:
+                game_entry["prices"]["eshop"] = eshop_data
+                history = update_history(history, game_id, "eshop", eshop_data)
+                if eshop_data.get("on_sale"):
+                    eshop_on_sale += 1
+                    print(f"    🎮 eショップ: ¥{eshop_data['sale_price']} (-{eshop_data['discount_pct']}%) 🔥")
+                else:
+                    print(f"    🎮 eショップ: ¥{eshop_data.get('regular_price','?')} 通常価格")
+            time.sleep(REQUEST_INTERVAL)
+
+        if game.get("steam_id"):
+            steam_data = fetch_steam_price(game["steam_id"])
+            if steam_data:
+                game_entry["prices"]["steam"] = steam_data
+                history = update_history(history, game_id, "steam", steam_data)
+                if steam_data.get("on_sale"):
+                    steam_on_sale += 1
+                    print(f"    🖥️ Steam: ¥{steam_data['sale_price']} (-{steam_data['discount_pct']}%) 🔥")
+                else:
+                    print(f"    🖥️ Steam: ¥{steam_data.get('regular_price','?')} 通常価格")
+            time.sleep(REQUEST_INTERVAL)
+
+        for platform in ["eshop", "steam"]:
+            key = f"{game_id}_{platform}"
+            if key in history and platform in game_entry["prices"]:
+                game_entry["prices"][platform]["all_time_low"] = history[key].get("all_time_low")
+                game_entry["prices"][platform]["all_time_low_date"] = history[key].get("all_time_low_date")
+                game_entry["prices"][platform]["sale_start"] = history[key].get("current_sale_start")
+
+        all_prices["games"][game_id] = game_entry
+
+    print("\n【データ保存】")
+    save_json(PRICES_FILE, all_prices)
+    save_json(HISTORY_FILE, history)
+
+    # 周辺機器価格取得
+    existing_peripherals = load_json(PERIPHERALS_FILE) if PERIPHERALS_FILE.exists() else {}
+    fetch_and_save_peripherals(existing_peripherals)
+
+    print("\n" + "=" * 50)
+    print("✅ 完了！")
+    print(f"  eショップ セール中: {eshop_on_sale}件")
+    print(f"  Steam セール中: {steam_on_sale}件")
+    for gid, gdata in all_prices["games"].items():
+        for plat, pdata in gdata.get("prices", {}).items():
+            if pdata.get("on_sale"):
+                print(f"  🔥 {gdata['title']} [{plat}] ¥{pdata.get('sale_price')} (-{pdata.get('discount_pct')}%)")
+    print("=" * 50)
+
+if __name__ == "__main__":
+    main()

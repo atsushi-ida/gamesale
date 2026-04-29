@@ -50,12 +50,12 @@ GAMES = [
     {"id": "poco_a_pokemon", "title": "ぽこ あ ポケモン", "maker": "任天堂", "nsuid": "70010000107420", "steam_id": None, "is_switch2": True},
     {"id": "deltarune", "title": "DELTARUNE", "maker": "tobyfox", "nsuid": "70010000096639", "steam_id": None, "is_switch2": True},
     {"id": "split_fiction",       "title": "スプリット・フィクション",                                      "maker": "EA",               "nsuid": "70010000096944", "steam_id": "2001120", "is_switch2": True},
-    {"id": "sw2_himitsu",         "title": "Nintendo Switch 2 のひみつ展",                                 "maker": "任天堂",           "nsuid": "70010000096305", "steam_id": null, "is_switch2": True},
-    {"id": "duskbloods",          "title": "The Duskbloods",                                              "maker": "フロムソフトウェア", "nsuid": "70010000096715", "steam_id": null, "is_switch2": True},
-    {"id": "splatoon_raiders",    "title": "スプラトゥーン レイダース",                                     "maker": "任天堂",           "nsuid": "70010000122823", "steam_id": null, "is_switch2": True},
-    {"id": "fantasy_life_i_sw2",  "title": "ファンタジーライフ i SW2 Edition",                             "maker": "レベルファイブ",    "nsuid": "70010000098486", "steam_id": null, "is_switch2": True},
-    {"id": "pokemon_za_sw2",      "title": "Pokemon LEGENDS Z-A Nintendo Switch 2 Edition",               "maker": "ゲームフリーク",    "nsuid": "70010000099190", "steam_id": null, "is_switch2": True},
-    {"id": "kirby_air_riders",    "title": "カービィのエアライダー",                                        "maker": "任天堂",           "nsuid": "70010000103774", "steam_id": null, "is_switch2": True},
+    {"id": "sw2_himitsu",         "title": "Nintendo Switch 2 のひみつ展",                                 "maker": "任天堂",           "nsuid": "70010000096305", "steam_id": None, "is_switch2": True},
+    {"id": "duskbloods",          "title": "The Duskbloods",                                              "maker": "フロムソフトウェア", "nsuid": "70010000096715", "steam_id": None, "is_switch2": True},
+    {"id": "splatoon_raiders",    "title": "スプラトゥーン レイダース",                                     "maker": "任天堂",           "nsuid": "70010000122823", "steam_id": None, "is_switch2": True},
+    {"id": "fantasy_life_i_sw2",  "title": "ファンタジーライフ i SW2 Edition",                             "maker": "レベルファイブ",    "nsuid": "70010000098486", "steam_id": None, "is_switch2": True},
+    {"id": "pokemon_za_sw2",      "title": "Pokemon LEGENDS Z-A Nintendo Switch 2 Edition",               "maker": "ゲームフリーク",    "nsuid": "70010000099190", "steam_id": None, "is_switch2": True},
+    {"id": "kirby_air_riders",    "title": "カービィのエアライダー",                                        "maker": "任天堂",           "nsuid": "70010000103774", "steam_id": None, "is_switch2": True},
 ]
 
 

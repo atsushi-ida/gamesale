@@ -320,6 +320,152 @@
           "fetched_at": "2026-04-30"
         }
       }
+    },
+    "split_fiction": {
+      "id": "split_fiction",
+      "title": "スプリット・フィクション",
+      "maker": "EA",
+      "is_switch2": true,
+      "nsuid": "70010000096944",
+      "steam_id": "2001120",
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 6900,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-30"
+        },
+        "steam": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 6900,
+          "sale_price": 4830,
+          "discount_pct": 30,
+          "sale_name": "Steam セール -30%",
+          "currency": "JPY",
+          "fetched_at": "2026-04-30",
+          "all_time_low": 4830,
+          "all_time_low_date": "2026-04-30",
+          "sale_start": "2026-04-30"
+        }
+      }
+    },
+    "sw2_himitsu": {
+      "id": "sw2_himitsu",
+      "title": "Nintendo Switch 2 のひみつ展",
+      "maker": "任天堂",
+      "is_switch2": true,
+      "nsuid": "70010000096305",
+      "steam_id": null,
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 990,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-30"
+        }
+      }
+    },
+    "duskbloods": {
+      "id": "duskbloods",
+      "title": "The Duskbloods",
+      "maker": "フロムソフトウェア",
+      "is_switch2": true,
+      "nsuid": "70010000096715",
+      "steam_id": null,
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 0,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-30"
+        }
+      }
+    },
+    "splatoon_raiders": {
+      "id": "splatoon_raiders",
+      "title": "スプラトゥーン レイダース",
+      "maker": "任天堂",
+      "is_switch2": true,
+      "nsuid": "70010000122823",
+      "steam_id": null,
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 6480,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-30"
+        }
+      }
+    },
+    "fantasy_life_i_sw2": {
+      "id": "fantasy_life_i_sw2",
+      "title": "ファンタジーライフ i SW2 Edition",
+      "maker": "レベルファイブ",
+      "is_switch2": true,
+      "nsuid": "70010000098486",
+      "steam_id": null,
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 7978,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-30"
+        }
+      }
+    },
+    "pokemon_za_sw2": {
+      "id": "pokemon_za_sw2",
+      "title": "Pokemon LEGENDS Z-A Nintendo Switch 2 Edition",
+      "maker": "ゲームフリーク",
+      "is_switch2": true,
+      "nsuid": "70010000099190",
+      "steam_id": null,
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 8100,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-30"
+        }
+      }
+    },
+    "kirby_air_riders": {
+      "id": "kirby_air_riders",
+      "title": "カービィのエアライダー",
+      "maker": "任天堂",
+      "is_switch2": true,
+      "nsuid": "70010000103774",
+      "steam_id": null,
+      "prices": {
+        "eshop": {
+          "status": "not_on_sale",
+          "on_sale": false,
+          "regular_price": 7980,
+          "sale_price": null,
+          "discount_pct": 0,
+          "currency": "JPY",
+          "fetched_at": "2026-04-30"
+        }
+      }
     }
   }
 }

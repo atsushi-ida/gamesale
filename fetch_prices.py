@@ -49,6 +49,7 @@ GAMES = [
     {"id": "donkey_kong_bananza", "title": "ドンキーコング バナンザ", "maker": "任天堂", "nsuid": "70010000096306", "steam_id": None, "is_switch2": True},
     {"id": "poco_a_pokemon", "title": "ぽこ あ ポケモン", "maker": "任天堂", "nsuid": "70010000107420", "steam_id": None, "is_switch2": True},
     {"id": "deltarune", "title": "DELTARUNE", "maker": "tobyfox", "nsuid": "70010000096639", "steam_id": None, "is_switch2": True},
+    {"id": "pokemon_za", "title": "Pokémon LEGENDS Z-A", "maker": "ゲームフリーク", "nsuid": "70010000096006", "steam_id": None, "is_switch2": False},
 ]
 
 

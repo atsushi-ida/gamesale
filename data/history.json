@@ -142,5 +142,20 @@
       }
     ],
     "current_sale_start": "2026-04-30"
+  },
+  "pokemon_za_eshop": {
+    "game_id": "pokemon_za",
+    "platform": "eshop",
+    "all_time_low": 880,
+    "all_time_low_date": "2026-04-30",
+    "records": [
+      {
+        "date": "2026-04-30",
+        "sale_price": 880,
+        "regular_price": 1430,
+        "discount_pct": 38
+      }
+    ],
+    "current_sale_start": "2026-04-30"
   }
 }

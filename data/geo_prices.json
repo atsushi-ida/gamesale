@@ -16,11 +16,23 @@
       "category": "",
       "match_score": 1.0
     },
+    "pokemon_za_sw2": {
+      "price": 6028,
+      "geo_title": "ゼルダの伝説　ブレス　オブ　ザ　ワイルド　Ｎｉｎｔｅｎｄｏ　Ｓｗｉｔｃｈ　２　Ｅｄｉｔｉｏｎ",
+      "category": "",
+      "match_score": 0.62
+    },
     "mhrise_sunbreak": {
       "price": 1408,
       "geo_title": "モンスターハンターワイルズ",
       "category": "",
       "match_score": 0.61
+    },
+    "sw2_himitsu": {
+      "price": 7128,
+      "geo_title": "Ｎｉｎｔｅｎｄｏ　Ｓｗｉｔｃｈ　２　プロコントローラー",
+      "category": "",
+      "match_score": 0.72
     }
   },
   "all_items": [

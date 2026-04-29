@@ -135,9 +135,22 @@
       "title": "オクトパストラベラー2",
       "maker": "スクウェア・エニックス",
       "is_switch2": false,
-      "nsuid": null,
+      "nsuid": "70010000058127",
       "steam_id": "1993360",
-      "prices": {}
+      "prices": {
+        "eshop": {
+          "status": "on_sale",
+          "on_sale": true,
+          "regular_price": 7800,
+          "sale_price": 3120,
+          "discount_pct": 60,
+          "sale_end": "2026-05-06",
+          "currency": "JPY",
+          "fetched_at": "2026-04-29",
+          "all_time_low": 3120,
+          "all_time_low_date": "2026-04-29"
+        }
+      }
     },
     "guilty_gear_strive": {
       "id": "guilty_gear_strive",

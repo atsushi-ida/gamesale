@@ -78,5 +78,19 @@
         "discount_pct": 80
       }
     ]
+  },
+  "octopath2_eshop": {
+    "game_id": "octopath2",
+    "platform": "eshop",
+    "all_time_low": 3120,
+    "all_time_low_date": "2026-04-29",
+    "records": [
+      {
+        "date": "2026-04-29",
+        "sale_price": 3120,
+        "regular_price": 7800,
+        "discount_pct": 60
+      }
+    ]
   }
 }

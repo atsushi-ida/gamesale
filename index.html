@@ -272,7 +272,7 @@ header{position:sticky;top:0;z-index:300;background:rgba(7,9,15,.96);backdrop-fi
 .peri-price{font-family:'Bebas Neue',sans-serif;font-size:15px;color:var(--accent2);flex-shrink:0}
 .peri-loading{font-size:10px;color:var(--text3)}
 /* ファイルサイズ */
-.fsize-badge{font-size:9px;color:var(--text3);background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle}
+.fsize-badge{font-size:9px;color:var(--text3);background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle}.rdate-badge{font-size:9px;color:var(--text3);background:var(--surface3);border:1px solid var(--border);border-radius:3px;padding:1px 5px;margin-left:4px;vertical-align:middle}
 
 /* FOOTER */
 footer{border-top:1px solid var(--border);padding:20px;text-align:center;font-size:10px;color:var(--text3);position:relative;z-index:1;line-height:2}
@@ -868,7 +868,7 @@ function createCard(gameId, game, index) {
           <div>
             <div class="gtitle">${game.title}</div>
             <div class="ppills">${platPills.join('')}</div>
-            <div class="cmeta">${game.maker}${FILE_SIZES[gameId] ? `<span class="fsize-badge">💾 ${FILE_SIZES[gameId].label}</span>` : ''}</div>
+            <div class="cmeta">${game.maker}${FILE_SIZES[gameId] ? `<span class="fsize-badge">💾 ${FILE_SIZES[gameId].label}</span>` : ''}${game.release_date ? ` <span class="rdate-badge">📅 ${game.release_date}</span>` : ''}</div>
           </div>
           <button class="exbtn">詳細 ▼</button>
         </div>

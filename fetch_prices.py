@@ -413,6 +413,30 @@ def fetch_geo_prices():
     save_json(DATA_DIR / "geo_prices.json", result)
 
 
+
+def update_file_sizes_in_html(all_prices):
+    """prices.jsonのfile_size_gbをindex.htmlのFILE_SIZESに反映"""
+    import re
+    from pathlib import Path
+    html_path = Path(__file__).parent / "index.html"
+    if not html_path.exists():
+        return
+    lines = ["const FILE_SIZES = {\n"]
+    for game_id, game in all_prices.get("games", {}).items():
+        size = game.get("file_size_gb")
+        if size is not None:
+            label = f"{size} GB"
+            lines.append(f"  {game_id}:{{ gb: {size}, label: \'{label}\' }},\n")
+        else:
+            lines.append(f"  {game_id}:{{ gb: null, label: \'未定\' }},\n")
+    lines.append("};\n")
+    new_block = "".join(lines)
+    html = html_path.read_text(encoding="utf-8")
+    html_new = re.sub(r'const FILE_SIZES = \{.*?\};', new_block, html, flags=re.DOTALL)
+    if html_new != html:
+        html_path.write_text(html_new, encoding="utf-8")
+        print("  ✅ index.html FILE_SIZES更新完了")
+
 def fetch_file_size(nsuid):
     """PlaywrightでeショップからGB容量を取得（初回のみ）"""
     try:
@@ -526,6 +550,8 @@ def main():
     print("\n【データ保存】")
     save_json(PRICES_FILE, all_prices)
     save_json(HISTORY_FILE, history)
+    # index.htmlのFILE_SIZESを自動更新
+    update_file_sizes_in_html(all_prices)
 
     # 周辺機器・ゲオは並列で同時取得
     print("\n【周辺機器・ゲオ 並列取得】")

@@ -438,20 +438,30 @@ def update_file_sizes_in_html(all_prices):
         print("  ✅ index.html FILE_SIZES更新完了")
 
 
-def fetch_release_date(title):
-    """Nintendo JP検索APIから発売日を取得"""
+def fetch_release_date(nsuid, title):
+    """Playwrightでeショップページから発売日/配信日を取得"""
     try:
-        import requests as req2
-        url = 'https://search.nintendo.jp/nintendo_soft/search.json'
-        r = req2.get(url, params={'q': title, 'limit': 1}, headers=HEADERS, timeout=10)
-        data = r.json()
-        if 'result' in data and 'items' in data['result'] and data['result']['items']:
-            item = data['result']['items'][0]
-            pdate = item.get('pdate')
-            if pdate:
-                return pdate[:10]  # YYYY-MM-DD形式
+        from playwright.sync_api import sync_playwright
+        import re as re2
+        url = f'https://store-jp.nintendo.com/list/software/{nsuid}.html'
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto(url, wait_until='domcontentloaded', timeout=30000)
+            page.wait_for_timeout(5000)
+            # ページタイトル確認
+            page_title = page.title()
+            text = page.inner_text('body')
+            browser.close()
+            # 最初の発売日/配信日だけ取得
+            for line in text.split('\n'):
+                if '配信日' in line or '発売日' in line:
+                    m = re2.search(r'(\d{4})年(\d{1,2})月(\d{1,2})日', line)
+                    if m:
+                        y, mo, d = m.group(1), m.group(2).zfill(2), m.group(3).zfill(2)
+                        return f'{y}-{mo}-{d}'
     except Exception as e:
-        print(f"  ⚠ 発売日取得エラー {title}: {e}")
+        print(f"  ⚠ 発売日取得エラー {nsuid}: {e}")
     return None
 
 def fetch_file_size(nsuid):
@@ -569,7 +579,7 @@ def main():
     for game_id, entry in all_prices.get("games", {}).items():
         if entry.get("release_date") is None and entry.get("title"):
             print(f"  📅 {entry['title']} ...", end=" ", flush=True)
-            date = fetch_release_date(entry["title"])
+            date = fetch_release_date(entry["nsuid"], entry["title"]) if entry.get("nsuid") else None
             if date:
                 entry["release_date"] = date
                 print(f"{date} ✅")

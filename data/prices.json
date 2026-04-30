@@ -38,7 +38,7 @@
         }
       },
       "file_size_gb": 12.5,
-      "release_date": "2026-01-08"
+      "release_date": "2022-10-21"
     },
     "mhrise_sunbreak": {
       "id": "mhrise_sunbreak",
@@ -68,7 +68,6 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 19.7,
       "release_date": "2022-06-30"
     },
     "dq11s": {
@@ -103,7 +102,7 @@
         }
       },
       "file_size_gb": 14.1,
-      "release_date": "2019-07-04"
+      "release_date": "2019-09-27"
     },
     "xenoblade3": {
       "id": "xenoblade3",
@@ -124,7 +123,7 @@
         }
       },
       "file_size_gb": 14.3,
-      "release_date": "2022-04-19"
+      "release_date": "2022-07-29"
     },
     "biohazard_village": {
       "id": "biohazard_village",
@@ -144,8 +143,7 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      },
-      "release_date": "2022-09-14"
+      }
     },
     "octopath2": {
       "id": "octopath2",
@@ -171,7 +169,7 @@
         }
       },
       "file_size_gb": 6.0,
-      "release_date": "2022-09-14"
+      "release_date": "2023-02-24"
     },
     "guilty_gear_strive": {
       "id": "guilty_gear_strive",
@@ -191,8 +189,7 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      },
-      "release_date": "2019-05-16"
+      }
     },
     "lies_of_p": {
       "id": "lies_of_p",
@@ -215,8 +212,7 @@
           "all_time_low_date": "2026-04-28",
           "sale_start": "2026-04-29"
         }
-      },
-      "release_date": "2026-04-16"
+      }
     },
     "sekiro": {
       "id": "sekiro",
@@ -257,7 +253,7 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "release_date": "2025-04-04"
+      "release_date": "2022-02-25"
     },
     "mariokart_world": {
       "id": "mariokart_world",
@@ -278,7 +274,7 @@
         }
       },
       "file_size_gb": 22.0,
-      "release_date": "2025-04-04"
+      "release_date": "2025-06-05"
     },
     "donkey_kong_bananza": {
       "id": "donkey_kong_bananza",
@@ -299,7 +295,7 @@
         }
       },
       "file_size_gb": 8.9,
-      "release_date": "2025-04-04"
+      "release_date": "2025-09-12"
     },
     "poco_a_pokemon": {
       "id": "poco_a_pokemon",
@@ -320,7 +316,7 @@
         }
       },
       "file_size_gb": 6.2,
-      "release_date": "2021-05-26"
+      "release_date": "2025-07-17"
     },
     "deltarune": {
       "id": "deltarune",
@@ -340,7 +336,7 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "release_date": "2025-04-04"
+      "release_date": "2025-06-05"
     },
     "pokemon_za": {
       "id": "pokemon_za",
@@ -364,7 +360,7 @@
         }
       },
       "file_size_gb": 6.0,
-      "release_date": "2021-05-26"
+      "release_date": "2025-10-16"
     },
     "split_fiction": {
       "id": "split_fiction",
@@ -398,7 +394,7 @@
         }
       },
       "file_size_gb": 69.2,
-      "release_date": "2025-04-04"
+      "release_date": "2025-06-05"
     },
     "sw2_himitsu": {
       "id": "sw2_himitsu",
@@ -419,7 +415,7 @@
         }
       },
       "file_size_gb": 1.6,
-      "release_date": "2025-04-04"
+      "release_date": "2025-06-05"
     },
     "duskbloods": {
       "id": "duskbloods",
@@ -439,7 +435,7 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "release_date": "2025-04-04"
+      "release_date": null
     },
     "splatoon_raiders": {
       "id": "splatoon_raiders",
@@ -460,7 +456,7 @@
         }
       },
       "file_size_gb": 20.0,
-      "release_date": "2026-04-21"
+      "release_date": "2025-07-17"
     },
     "fantasy_life_i_sw2": {
       "id": "fantasy_life_i_sw2",
@@ -502,7 +498,7 @@
         }
       },
       "file_size_gb": 11.2,
-      "release_date": "2025-06-05"
+      "release_date": "2025-10-16"
     },
     "kirby_air_riders": {
       "id": "kirby_air_riders",
@@ -523,7 +519,7 @@
         }
       },
       "file_size_gb": 21.8,
-      "release_date": "2025-08-19"
+      "release_date": "2025-08-28"
     },
     "mario_party_jamboree": {
       "id": "mario_party_jamboree",
@@ -544,7 +540,7 @@
         }
       },
       "file_size_gb": 2.9,
-      "release_date": "2025-05-30"
+      "release_date": "2025-07-24"
     }
   }
 }

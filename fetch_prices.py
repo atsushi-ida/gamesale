@@ -412,6 +412,28 @@ def fetch_geo_prices():
     }
     save_json(DATA_DIR / "geo_prices.json", result)
 
+
+def fetch_file_size(nsuid):
+    """PlaywrightでeショップからGB容量を取得（初回のみ）"""
+    try:
+        from playwright.sync_api import sync_playwright
+        import re as re2
+        url = f'https://store-jp.nintendo.com/list/software/{nsuid}.html'
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto(url, wait_until='domcontentloaded', timeout=30000)
+            page.wait_for_timeout(5000)
+            text = page.inner_text('body')
+            browser.close()
+            for line in text.split('\n'):
+                m = re2.search(r'([\d.]+)\s*GB', line)
+                if m:
+                    return float(m.group(1))
+    except Exception as e:
+        print(f"  ⚠ 容量取得エラー {nsuid}: {e}")
+    return None
+
 def main():
     print("=" * 50)
     print("ゲーセル 価格取得スクリプト v7")
@@ -423,6 +445,7 @@ def main():
     all_prices = {"last_updated": today, "games": {}}
 
     print("\n【価格取得開始（並列処理）】")
+
 
     def fetch_game(game):
         """1タイトル分の価格を取得して返す"""
@@ -470,6 +493,10 @@ def main():
         if game_id not in game_results:
             continue
         entry, results = game_results[game_id]
+        # 既存のfile_size_gbを引き継ぐ
+        prev = all_prices.get("games", {}).get(game_id, {})
+        if prev.get("file_size_gb") is not None:
+            entry["file_size_gb"] = prev["file_size_gb"]
         for plat, data in results:
             history = update_history(history, game_id, plat, data)
             if data.get("on_sale"):
@@ -483,6 +510,19 @@ def main():
                 entry["prices"][platform]["sale_start"] = history[key].get("current_sale_start")
         all_prices["games"][game_id] = entry
 
+        # 容量未取得のeショップタイトルをPlaywrightで取得
+
+    # 容量未取得タイトルをPlaywrightで取得
+    print("\n【容量取得】")
+    for game_id, entry in all_prices.get("games", {}).items():
+        if entry.get("file_size_gb") is None and entry.get("nsuid"):
+            print(f"  🔍 {entry['title']} ...", end=" ", flush=True)
+            size = fetch_file_size(entry["nsuid"])
+            if size:
+                entry["file_size_gb"] = size
+                print(f"{size}GB ✅")
+            else:
+                print("取得不可")
     print("\n【データ保存】")
     save_json(PRICES_FILE, all_prices)
     save_json(HISTORY_FILE, history)

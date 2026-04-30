@@ -437,6 +437,23 @@ def update_file_sizes_in_html(all_prices):
         html_path.write_text(html_new, encoding="utf-8")
         print("  ✅ index.html FILE_SIZES更新完了")
 
+
+def fetch_release_date(title):
+    """Nintendo JP検索APIから発売日を取得"""
+    try:
+        import requests as req2
+        url = 'https://search.nintendo.jp/nintendo_soft/search.json'
+        r = req2.get(url, params={'q': title, 'limit': 1}, headers=HEADERS, timeout=10)
+        data = r.json()
+        if 'result' in data and 'items' in data['result'] and data['result']['items']:
+            item = data['result']['items'][0]
+            pdate = item.get('pdate')
+            if pdate:
+                return pdate[:10]  # YYYY-MM-DD形式
+    except Exception as e:
+        print(f"  ⚠ 発売日取得エラー {title}: {e}")
+    return None
+
 def fetch_file_size(nsuid):
     """PlaywrightでeショップからGB容量を取得（初回のみ）"""
     try:
@@ -550,6 +567,17 @@ def main():
     print("\n【データ保存】")
     save_json(PRICES_FILE, all_prices)
     save_json(HISTORY_FILE, history)
+    # 発売日未取得タイトルを取得
+    print("\n【発売日取得】")
+    for game_id, entry in all_prices.get("games", {}).items():
+        if entry.get("release_date") is None and entry.get("title"):
+            print(f"  📅 {entry['title']} ...", end=" ", flush=True)
+            date = fetch_release_date(entry["title"])
+            if date:
+                entry["release_date"] = date
+                print(f"{date} ✅")
+            else:
+                print("取得不可")
     # index.htmlのFILE_SIZESを自動更新
     update_file_sizes_in_html(all_prices)
 

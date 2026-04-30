@@ -564,9 +564,6 @@ def main():
                 print(f"{size}GB ✅")
             else:
                 print("取得不可")
-    print("\n【データ保存】")
-    save_json(PRICES_FILE, all_prices)
-    save_json(HISTORY_FILE, history)
     # 発売日未取得タイトルを取得
     print("\n【発売日取得】")
     for game_id, entry in all_prices.get("games", {}).items():
@@ -578,6 +575,9 @@ def main():
                 print(f"{date} ✅")
             else:
                 print("取得不可")
+    print("\n【データ保存】")
+    save_json(PRICES_FILE, all_prices)
+    save_json(HISTORY_FILE, history)
     # index.htmlのFILE_SIZESを自動更新
     update_file_sizes_in_html(all_prices)
 

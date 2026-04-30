@@ -37,7 +37,8 @@
           "sale_start": "2026-04-29"
         }
       },
-      "file_size_gb": 12.5
+      "file_size_gb": 12.5,
+      "release_date": "2026-01-08"
     },
     "mhrise_sunbreak": {
       "id": "mhrise_sunbreak",
@@ -66,7 +67,9 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      }
+      },
+      "file_size_gb": 19.7,
+      "release_date": "2022-06-30"
     },
     "dq11s": {
       "id": "dq11s",
@@ -99,7 +102,8 @@
           "sale_start": "2026-04-29"
         }
       },
-      "file_size_gb": 14.1
+      "file_size_gb": 14.1,
+      "release_date": "2019-07-04"
     },
     "xenoblade3": {
       "id": "xenoblade3",
@@ -119,7 +123,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 14.3
+      "file_size_gb": 14.3,
+      "release_date": "2022-04-19"
     },
     "biohazard_village": {
       "id": "biohazard_village",
@@ -139,7 +144,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      }
+      },
+      "release_date": "2022-09-14"
     },
     "octopath2": {
       "id": "octopath2",
@@ -164,7 +170,8 @@
           "sale_start": "2026-04-29"
         }
       },
-      "file_size_gb": 6.0
+      "file_size_gb": 6.0,
+      "release_date": "2022-09-14"
     },
     "guilty_gear_strive": {
       "id": "guilty_gear_strive",
@@ -184,7 +191,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      }
+      },
+      "release_date": "2019-05-16"
     },
     "lies_of_p": {
       "id": "lies_of_p",
@@ -207,7 +215,8 @@
           "all_time_low_date": "2026-04-28",
           "sale_start": "2026-04-29"
         }
-      }
+      },
+      "release_date": "2026-04-16"
     },
     "sekiro": {
       "id": "sekiro",
@@ -247,7 +256,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      }
+      },
+      "release_date": "2025-04-04"
     },
     "mariokart_world": {
       "id": "mariokart_world",
@@ -267,7 +277,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 22.0
+      "file_size_gb": 22.0,
+      "release_date": "2025-04-04"
     },
     "donkey_kong_bananza": {
       "id": "donkey_kong_bananza",
@@ -287,7 +298,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 8.9
+      "file_size_gb": 8.9,
+      "release_date": "2025-04-04"
     },
     "poco_a_pokemon": {
       "id": "poco_a_pokemon",
@@ -307,7 +319,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 6.2
+      "file_size_gb": 6.2,
+      "release_date": "2021-05-26"
     },
     "deltarune": {
       "id": "deltarune",
@@ -326,7 +339,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      }
+      },
+      "release_date": "2025-04-04"
     },
     "pokemon_za": {
       "id": "pokemon_za",
@@ -349,7 +363,8 @@
           "sale_start": null
         }
       },
-      "file_size_gb": 6.0
+      "file_size_gb": 6.0,
+      "release_date": "2021-05-26"
     },
     "split_fiction": {
       "id": "split_fiction",
@@ -382,7 +397,8 @@
           "sale_start": "2026-04-30"
         }
       },
-      "file_size_gb": 69.2
+      "file_size_gb": 69.2,
+      "release_date": "2025-04-04"
     },
     "sw2_himitsu": {
       "id": "sw2_himitsu",
@@ -402,7 +418,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 1.6
+      "file_size_gb": 1.6,
+      "release_date": "2025-04-04"
     },
     "duskbloods": {
       "id": "duskbloods",
@@ -421,7 +438,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      }
+      },
+      "release_date": "2025-04-04"
     },
     "splatoon_raiders": {
       "id": "splatoon_raiders",
@@ -441,7 +459,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 20.0
+      "file_size_gb": 20.0,
+      "release_date": "2026-04-21"
     },
     "fantasy_life_i_sw2": {
       "id": "fantasy_life_i_sw2",
@@ -461,7 +480,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 14.2
+      "file_size_gb": 14.2,
+      "release_date": "2025-06-05"
     },
     "pokemon_za_sw2": {
       "id": "pokemon_za_sw2",
@@ -481,7 +501,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 11.2
+      "file_size_gb": 11.2,
+      "release_date": "2025-06-05"
     },
     "kirby_air_riders": {
       "id": "kirby_air_riders",
@@ -501,7 +522,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 21.8
+      "file_size_gb": 21.8,
+      "release_date": "2025-08-19"
     },
     "mario_party_jamboree": {
       "id": "mario_party_jamboree",
@@ -521,7 +543,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 2.9
+      "file_size_gb": 2.9,
+      "release_date": "2025-05-30"
     }
   }
 }

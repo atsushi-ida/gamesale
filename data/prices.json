@@ -295,7 +295,7 @@
         }
       },
       "file_size_gb": 8.9,
-      "release_date": "2025-09-12"
+      "release_date": "2025-07-17"
     },
     "poco_a_pokemon": {
       "id": "poco_a_pokemon",
@@ -434,7 +434,8 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      }
+      },
+      "release_date": "2026年発売予定"
     },
     "splatoon_raiders": {
       "id": "splatoon_raiders",
@@ -454,7 +455,8 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 20.0
+      "file_size_gb": 20.0,
+      "release_date": "2026-07-23"
     },
     "fantasy_life_i_sw2": {
       "id": "fantasy_life_i_sw2",
@@ -538,7 +540,7 @@
         }
       },
       "file_size_gb": 2.9,
-      "release_date": "2018-10-05"
+      "release_date": "2025-07-24"
     }
   }
 }

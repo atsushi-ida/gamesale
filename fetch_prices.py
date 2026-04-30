@@ -33,6 +33,17 @@ HEADERS = {
     "Accept-Language": "ja-JP,ja;q=0.9",
 }
 
+# === 発売日手動オーバーライド ===
+# 自動取得が間違っているもの・取得不可のものを手動で指定
+MANUAL_RELEASE_DATES = {
+    # 自動取得が間違っているもの
+    "ドンキーコング バナンザ": "2025-07-17",
+    "スーパーマリオパーティ ジャンボリー Nintendo Switch 2 Edition": "2025-07-24",
+    # 取得不可だったもの（未発売タイトル）
+    "スプラトゥーン レイダース": "2026-07-23",
+    "The Duskbloods": "2026年発売予定",  # 文字列（具体日未定）
+}
+
 GAMES = [
     {"id": "persona5_royal", "title": "ペルソナ5 ザ・ロイヤル", "maker": "アトラス", "nsuid": "70010000042356", "steam_id": "1687950", "is_switch2": False},
     {"id": "mhrise_sunbreak", "title": "モンスターハンターライズ：サンブレイク セット", "maker": "カプコン", "nsuid": "70070000013655", "steam_id": "1446780", "is_switch2": False},
@@ -641,6 +652,19 @@ def main():
                     print(f"  📅 {entry['title']} ... {date} ✅")
                 else:
                     print(f"  📅 {entry['title']} ... 取得不可")
+    # 発売日 手動オーバーライド適用（自動取得後の最終補正）
+    if MANUAL_RELEASE_DATES:
+        print("\n【発売日 手動オーバーライド】")
+        for gid, entry in all_prices.get("games", {}).items():
+            title = entry.get("title", "")
+            if title in MANUAL_RELEASE_DATES:
+                old = entry.get("release_date")
+                new = MANUAL_RELEASE_DATES[title]
+                if old != new:
+                    entry["release_date"] = new
+                    print(f"  📌 {title} ... {old or '未取得'} → {new} (手動)")
+                else:
+                    print(f"  ✓ {title} ... {new} (一致)")
     print("\n【データ保存】")
     save_json(PRICES_FILE, all_prices)
     save_json(HISTORY_FILE, history)

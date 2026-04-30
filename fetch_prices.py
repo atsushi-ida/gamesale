@@ -439,29 +439,78 @@ def update_file_sizes_in_html(all_prices):
 
 
 def fetch_release_date(nsuid, title):
-    """Playwrightでeショップページから発売日/配信日を取得"""
-    try:
-        from playwright.sync_api import sync_playwright
-        import re as re2
-        url = f'https://store-jp.nintendo.com/list/software/{nsuid}.html'
-        with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True)
-            page = browser.new_page()
-            page.goto(url, wait_until='domcontentloaded', timeout=30000)
-            page.wait_for_timeout(5000)
-            # ページタイトル確認
-            page_title = page.title()
-            text = page.inner_text('body')
-            browser.close()
-            # 最初の発売日/配信日だけ取得
-            for line in text.split('\n'):
-                if '配信日' in line or '発売日' in line:
-                    m = re2.search(r'(\d{4})年(\d{1,2})月(\d{1,2})日', line)
-                    if m:
-                        y, mo, d = m.group(1), m.group(2).zfill(2), m.group(3).zfill(2)
-                        return f'{y}-{mo}-{d}'
-    except Exception as e:
-        print(f"  ⚠ 発売日取得エラー {nsuid}: {e}")
+    """eショップ＋Nintendo公式で発売日をクロスチェック取得"""
+    import re as re2
+
+    def parse_date(text):
+        """テキストからYYYY-MM-DD形式の日付を抽出"""
+        m = re2.search(r'(\d{4})年(\d{1,2})月(\d{1,2})日', text)
+        if m:
+            return f'{m.group(1)}-{m.group(2).zfill(2)}-{m.group(3).zfill(2)}'
+        return None
+
+    def fetch_from_eshop(nsuid):
+        """eショップの配信日タブを正確に取得"""
+        try:
+            from playwright.sync_api import sync_playwright
+            url = f'https://store-jp.nintendo.com/list/software/{nsuid}.html'
+            with sync_playwright() as p:
+                browser = p.chromium.launch(headless=True)
+                page = browser.new_page()
+                page.goto(url, wait_until='domcontentloaded', timeout=30000)
+                page.wait_for_timeout(5000)
+                text = page.inner_text('body')
+                browser.close()
+                for line in text.split('\n'):
+                    # 「配信日	2025年6月5日」形式を正確に取得
+                    if line.strip().startswith('配信日') or line.strip().startswith('発売日'):
+                        date = parse_date(line)
+                        if date:
+                            return date
+        except Exception as e:
+            print(f"  ⚠ eショップ取得エラー: {e}")
+        return None
+
+    def fetch_from_nintendo_search(title):
+        """Nintendo JP検索APIで発売日を取得"""
+        try:
+            import requests as req2
+            url = 'https://search.nintendo.jp/nintendo_soft/search.json'
+            r = req2.get(url, params={'q': title, 'limit': 3}, headers=HEADERS, timeout=10)
+            data = r.json()
+            if 'result' in data and 'items' in data['result']:
+                for item in data['result']['items']:
+                    # タイトルが一致するものだけ
+                    if item.get('title', '').replace(' ', '') in title.replace(' ', '') or title.replace(' ', '') in item.get('title', '').replace(' ', ''):
+                        # mvsdate（発売日）を使用
+                        mvsdate = item.get('mvsdate', [])
+                        if mvsdate:
+                            date = parse_date(mvsdate[0] if isinstance(mvsdate, list) else mvsdate)
+                            if date and date > '2020-01-01':
+                                return date
+        except Exception as e:
+            print(f"  ⚠ Nintendo検索取得エラー: {e}")
+        return None
+
+    # 1. eショップから取得
+    date1 = fetch_from_eshop(nsuid)
+
+    # 2. Nintendo検索APIから取得
+    date2 = fetch_from_nintendo_search(title)
+
+    # 3. クロスチェック
+    if date1 and date2:
+        if date1 == date2:
+            return date1  # 一致 → 採用
+        else:
+            # 不一致 → eショップを優先（配信日タブが最も正確）
+            print(f"  ⚠ 日付不一致: eショップ={date1} 検索={date2} → eショップ採用")
+            return date1
+    elif date1:
+        return date1
+    elif date2:
+        return date2
+
     return None
 
 def fetch_file_size(nsuid):
@@ -574,17 +623,24 @@ def main():
                 print(f"{size}GB ✅")
             else:
                 print("取得不可")
-    # 発売日未取得タイトルを取得
-    print("\n【発売日取得】")
-    for game_id, entry in all_prices.get("games", {}).items():
-        if entry.get("release_date") is None and entry.get("title"):
-            print(f"  📅 {entry['title']} ...", end=" ", flush=True)
-            date = fetch_release_date(entry["nsuid"], entry["title"]) if entry.get("nsuid") else None
-            if date:
-                entry["release_date"] = date
-                print(f"{date} ✅")
-            else:
-                print("取得不可")
+    # 発売日未取得タイトルを並列取得
+    targets = [(gid, e) for gid, e in all_prices.get("games", {}).items()
+               if e.get("release_date") is None and e.get("nsuid")]
+    if targets:
+        print(f"\n【発売日取得】({len(targets)}件 並列処理)")
+        def fetch_date_task(args):
+            gid, entry = args
+            date = fetch_release_date(entry["nsuid"], entry["title"])
+            return gid, entry, date
+        with ThreadPoolExecutor(max_workers=5) as executor:
+            futures = {executor.submit(fetch_date_task, t): t for t in targets}
+            for future in as_completed(futures):
+                gid, entry, date = future.result()
+                if date:
+                    entry["release_date"] = date
+                    print(f"  📅 {entry['title']} ... {date} ✅")
+                else:
+                    print(f"  📅 {entry['title']} ... 取得不可")
     print("\n【データ保存】")
     save_json(PRICES_FILE, all_prices)
     save_json(HISTORY_FILE, history)

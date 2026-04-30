@@ -68,6 +68,7 @@
           "fetched_at": "2026-04-30"
         }
       },
+      "file_size_gb": 19.7,
       "release_date": "2022-06-30"
     },
     "dq11s": {
@@ -252,8 +253,7 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      },
-      "release_date": "2022-02-25"
+      }
     },
     "mariokart_world": {
       "id": "mariokart_world",
@@ -295,7 +295,7 @@
         }
       },
       "file_size_gb": 8.9,
-      "release_date": "2025-07-17"
+      "release_date": "2025-09-12"
     },
     "poco_a_pokemon": {
       "id": "poco_a_pokemon",
@@ -434,8 +434,7 @@
           "currency": "JPY",
           "fetched_at": "2026-04-30"
         }
-      },
-      "release_date": null
+      }
     },
     "splatoon_raiders": {
       "id": "splatoon_raiders",
@@ -455,8 +454,7 @@
           "fetched_at": "2026-04-30"
         }
       },
-      "file_size_gb": 20.0,
-      "release_date": "2026-07-23"
+      "file_size_gb": 20.0
     },
     "fantasy_life_i_sw2": {
       "id": "fantasy_life_i_sw2",
@@ -540,7 +538,7 @@
         }
       },
       "file_size_gb": 2.9,
-      "release_date": "2025-07-24"
+      "release_date": "2018-10-05"
     }
   }
 }
